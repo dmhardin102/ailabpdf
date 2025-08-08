@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Parsed Lab Results - Fitomics Research Labs</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(to bottom, #ffffff, #e4ac61);
+      color: #003b59;
+      display: flex;
+      flex-direction: column;
+    }
+    .toolbar {
+      position: relative;
+      background: linear-gradient(to right, #e4ac61, #c19962);
+      padding: 10px 40px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .toolbar-toggle {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.2em;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .container {
+      overflow: auto;
+    }
+    .d-flex-row {
+      display: flex;
+      flex-direction: row;
+    }
+    .d-flex-column {
+      display: flex;
+      flex-direction: column;
+    }
+    .pdf-panel {
+      width: 40%;
+      transition: width 0.5s;
+      overflow: hidden;
+      background: #ffffff;
+      border-right: 2px solid #c19962;
+      position: relative;
+    }
+    .pdf-panel.closed {
+      width: 0;
+    }
+    .pdf-panel embed {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow: auto;
+      background: #ffffff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      table-layout: fixed;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+      font-size: 0.9em;
+    }
+    th {
+      background: #003b59;
+      color: white;
+      font-size: 0.95em;
+    }
+    input[type="text"], select {
+      width: 90%;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button.review-btn {
+      background: #003b59;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      margin: 4px;
+      font-size: 0.8em;
+      transition: background 0.3s ease;
+    }
+    button.review-btn:hover {
+      background: #00263f;
+    }
+    .corrected {
+      background-color: #fff8c4 !important;
+    }
+    .reviewed {
+      background-color: #d8f8d8 !important;
+    }
+    #finish-btn, .finish-btn {
+      background: linear-gradient(to right, #e4ac61, #c19962);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 20px;
+      display: block;
+    }
+    #finish-btn:hover, .finish-btn:hover {
+      background: linear-gradient(to right, #c19962, #e4ac61);
+    }
+    .button-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      justify-content: space-between;
+    }
+    .button-group .finish-btn {
+      margin-top: 0;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8em;
+    }
+
+    /* Autocomplete input styling */
+    .autocomplete-wrapper {
+      position: relative;
+      width: 90%;
+    }
+    .autocomplete-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .autocomplete-input:focus {
+      border-color: #003b59;
+      outline: none;
+    }
+
+    /* Make sure datalist options have good styling */
+    datalist {
+      width: 100%;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 0 0 4px 4px;
+    }
+
+    @media (max-width: 768px) {
+      .pdf-panel {
+        width: 100%;
+        position: absolute;
+        z-index: 5;
+      }
+      .content {
+        padding-top: 60px;
+      }
+    }
+    .doc-button {
+      height: 50px;
+      width: 100%;
+      font-size: 1.3rem;
+    }
+    .toggleable {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.4s ease;
+    }
+    .toggleable.open {
+      max-height: 100%;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    Fitomics Research Labs — Verify Report
+  </div>
+
+  <div class="container d-flex-column">
+  <form id="finalize-form" method="POST" action="/final">
+  {% for path, doc, date in doc_data %}
+  {% set table_index = loop.index0 %}
+
+    <button class="doc-button" type="button" onclick="showTables('doc-{{table_index }}')">{{ date }} - Click Bar to Expand/Contract Results</button>
+    <div class='d-flex-row toggleable {{ "open" if table_index == 0 else ""}}' id="doc-{{ table_index }}">
+      <div class="pdf-panel">
+        <embed src="{{ path }}" type="application/pdf">
+      </div>
+
+      <div class="content">
+        <h2>Review and Correct Parsed Results</h2>
+        <div class="button-group">
+          <button type="button" class="review-btn" onclick="markAllAsReviewed()">Mark All as Reviewed</button>
+          <button type="submit" class="finish-btn">Finish and View Final Report</button>
+        </div>
+        <table id="correctionsTable-{{ table_index }}" data-date="{{ date }}">
+          <thead>
+            <tr>
+              <th>Test Name Detected</th>
+              <th>Correct Name</th>
+              <th>Value</th>
+              <th>Low Ref</th>
+              <th>High Ref</th>
+              <th>Units</th>
+              <th>reviewed</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in doc %}
+            <input type="hidden" name="date[]" value="{{ date }}">
+            <tr id="row" draggable="true" ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="drop(event)">
+              <td>{{ r.Original }}</td>
+              <td class="autocomplete-wrapper">
+                <input
+                  type="text"
+                  name="test-name[]"
+                  class="autocomplete-input"
+                  list="test-name"
+                  value="{{ r.Standardized }}"
+                  placeholder="Type or select test name"
+                  oninput="handleImmediateCorrection(this)">
+              </td>
+              <td><input type="number" step="any" name="correct-value[]" value="{{ r.Value }}" oninput="handleImmediateCorrection(this)"></td>
+              <td><input type="text" name="correct-low[]" value="{{ r.Low }}" placeholder="Low Ref" oninput="handleImmediateCorrection(this)"></td>
+              <td><input type="text" name="correct-high[]" value="{{ r.High }}" placeholder="High Ref" oninput="handleImmediateCorrection(this)"></td>
+              <td><input type="text" name="correct-units[]" value="{{ r.Units }}" placeholder="Units" oninput="handleImmediateCorrection(this)"></td>
+              <td><button type="button" class="review-btn" onclick="markAsReviewed(this)">Reviewed</button></td>
+              <td>
+                <button type="button" class="review-btn" onclick="addRow(this)">Add Row</button>
+                <button type="button" class="review-btn" onclick="removeRow(this)">Remove Row</button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endfor %}
+  <button id="finish-btn" type="submit" style="margin-left: auto; margin-right: auto; margin-bottom: 20px;">Finish and View Final Report</button>
+  </form>
+  </div>
+  <datalist id="test-name">
+    {% for key in DEFAULT_RANGES.keys() %}
+    <option value="{{ key }}">
+    {% endfor %}
+  </datalist>
+
+  <script>
+    function showTables(idToShow) {
+      const target = document.getElementById(idToShow);
+      const isOpen = target.classList.contains('open');
+
+      if (target.classList.contains('open')) {
+        target.classList.remove('open');
+      } else {
+        target.classList.add('open');
+      }
+    }
+    function togglePDF() {
+      document.querySelectorAll('.pdfPanel').forEach(el => {
+        el.classList.toggle('closed');
+     });
+    }
+
+    function handleImmediateCorrection(input) {
+      const row = input.closest('tr')
+      row.classList.add('corrected');
+      row.classList.remove('reviewed');
+    }
+    function markAsReviewed(input) {
+      const row = input.closest('tr')
+      row.classList.remove('corrected');
+      row.classList.add('reviewed');
+    }
+    function markAllAsReviewed() {
+      document.querySelectorAll('tr').forEach((tr) => {
+        tr.classList.remove('corrected');
+        tr.classList.add('reviewed');
+      });
+    }
+    function addRow(button) {
+      const tbody = button.closest('tbody');
+      const row = button.closest('tr');
+      const newRow = tbody.insertRow(row.rowIndex);
+      newRow.draggable = true;
+      newRow.ondragstart = dragStart;
+      newRow.ondragover = dragOver;
+      newRow.ondrop = drop;
+      newRow.innerHTML = `
+        <td>New Test</td>
+        <td class="autocomplete-wrapper">
+          <input
+            type="text"
+            id="correct-name"
+            class="autocomplete-input"
+            list="test-name"
+            placeholder="Type or select test name"
+            oninput="handleImmediateCorrection(this)">
+        </td>
+        <td><input type="number" step="any" name="correct-value" placeholder="Correct value" oninput="handleImmediateCorrection(this)"></td>
+        <td><input type="text" name="correct-low" placeholder="Low Ref" oninput="handleImmediateCorrection(this)"></td>
+        <td><input type="text" name="correct-high" placeholder="High Ref" oninput="handleImmediateCorrection(this)"></td>
+        <td><input type="text" name="correct-units" placeholder="Units" oninput="handleImmediateCorrection(this)"></td>
+        <td><button type="button" class="review-btn" onclick="markAsReviewed(this)">Reviewed</button></td>
+        <td>
+          <button type="button" class="review-btn" onclick="removeRow(this)">Remove Row</button>
+        </td>
+      `;
+    }
+    function removeRow(button) {
+      const row = button.closest('tr')
+      row.remove();
+    }
+
+    // drag-n-drop
+    let dragSrc = null;
+    function dragStart(e) {
+      dragSrc = e.currentTarget;
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    function dragOver(e) {
+      e.preventDefault();
+    }
+    function drop(e) {
+      e.preventDefault();
+      if (dragSrc && dragSrc !== e.currentTarget) {
+        const tbody = dragSrc.parentNode;
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const srcIdx = rows.indexOf(dragSrc);
+        const tgtIdx = rows.indexOf(e.currentTarget);
+        tbody.insertBefore(dragSrc, srcIdx < tgtIdx ? e.currentTarget.nextSibling : e.currentTarget);
+
+        // Update row IDs after dragging
+        updateRowIds();
+      }
+    }
+  </script>
+
+</body>
+</html>
+

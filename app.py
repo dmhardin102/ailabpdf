@@ -1,0 +1,252 @@
+from collections import defaultdict
+import os
+import re
+from datetime import datetime
+from flask import Flask, request, render_template, send_from_directory
+
+from parse import parse_labcorp_pdf
+import fitz
+
+app = Flask(__name__)
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+from json import load
+with open('default_ranges.json') as f:
+    DEFAULT_RANGES = load(f)
+
+with open('common_aliases.json') as f:
+    COMMON_TEST_ALIASES = load(f)
+
+
+@app.route("/")
+def upload():
+    return render_template('upload.html.j2', year=datetime.now().year)
+
+@app.route("/parse", methods=["POST"])
+def parse():
+    paths = []
+    for fstorage in request.files.getlist('file'):
+        fstorage.save(path := f"./uploads/{fstorage.filename}")
+        paths.append(path)
+
+    docs, dates = [], []
+    for path in paths:
+        with fitz.open(path) as doc:
+            subject_metadata, sample_metadata, data = parse_labcorp_pdf(doc)
+
+        rows = []
+        for row in data:
+            test_name_candidates = [
+                f'{row["Test"]} {row["Units"]}',
+                f'{row["Panel"]} - {row["Test"]}',
+                row["Test"],
+            ]
+
+            low, high, qualitative, units = None, None, None, row.get('Units')
+            for test_name in test_name_candidates:
+                test_name = COMMON_TEST_ALIASES.get(test_name.casefold(), test_name)
+                if test_name in DEFAULT_RANGES:
+                    match DEFAULT_RANGES[test_name]:
+                        case [qualitative, units]:
+                            pass
+                        case [low, high, units]:
+                            pass
+                        case [low, high, units, _, _, _]:
+                            pass
+                    break
+
+
+            if row["Reference Interval"] is not None:
+                if row["Reference Interval"].startswith("<"):
+                    high = row["Reference Interval"].removeprefix("<")
+                    low = "0"
+                elif row["Reference Interval"].startswith(">"):
+                    low = row["Reference Interval"].removeprefix(">")
+                    high = None
+                else:
+                    parts = re.split(r"\s*[-\u2013]\s*", row["Reference Interval"])
+                    if row['Reference Interval'].startswith(('-', '\u2013')) and len(parts) == 3:
+                        low, high = f'-{parts[0]}{parts[1]}', parts[2]
+                    else:
+                        low, high = parts[0], parts[1] if len(parts) > 1 else None
+
+            row_data = {
+                "Original": row["Test"],
+                "Standardized": test_name,
+                "Value": row["Current Result"],
+                "Units": units,
+                "Low": low,
+                "High": high,
+                "Qualitative": qualitative,
+                "Flag": row["Flag"],
+            }
+            rows.append({k: v if v is not None else "" for k, v in row_data.items()})
+        docs.append(rows)
+        dates.append(sample_metadata['Date Collected'])
+
+    from datetime import datetime
+    doc_data=sorted(zip(paths, docs, dates), key=lambda v: datetime.strptime(v[-1], '%m/%d/%Y'))
+
+
+    return render_template(
+        'verification.html.j2',
+        doc_data=doc_data,
+        DEFAULT_RANGES=DEFAULT_RANGES,
+    )
+
+@app.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory("uploads", filename)
+
+
+def iter_multidict_items(multidict):
+    values = [multidict.getlist(key) for key in multidict.keys()]
+    clean_keys = [k.removesuffix('[]') for k in multidict.keys()]
+    for row in zip(*values):
+        yield dict(zip(clean_keys, row))
+
+
+@app.route("/final", methods=["POST"])
+def final():
+    import json
+
+    final_rows = []
+
+    # Hard-coded list of test names that should ALWAYS have "Not Established" reference ranges
+    FORCE_NOT_ESTABLISHED = ["Neutrophils", "Monocytes", "Eos", "Lymphs", "Basophils", "Lymphocytes", "Eosinophils"]
+
+    # Track which specific tests were explicitly flagged in the original PDF
+    EXPLICITLY_FLAGGED = set()
+
+    for row in iter_multidict_items(request.form):
+        test = row.get("test-name", "").strip()
+        val = row.get("correct-value", "").strip()
+        units = row.get("correct-units", "").strip()
+        low = row.get("correct-low", "").strip()
+        high = row.get("correct-high", "").strip()
+
+        # CRITICAL: Get the original flag from PDF and prioritize it completely
+        original_flag = row.get("Flag", "").strip()
+
+        # If a test was explicitly flagged in the original PDF, track it
+        if original_flag in ["High", "Low", "Abnormal"]:
+            EXPLICITLY_FLAGGED.add(test)
+
+        # Direct fix for CBC percentage markers
+        if (test in FORCE_NOT_ESTABLISHED and "Absolute" not in test and
+            "Count" not in test and "abs" not in test.lower()):
+            low = "Not Established"
+            high = "Not Established"
+
+            # IMPORTANT: Only keep original flag if it was present in the PDF
+            flag = original_flag if original_flag else "Normal"
+        else:
+            # Only use default ranges if no valid ranges were provided
+            if not low or not high or low == "N/A":
+                # Try direct match first
+                if test in DEFAULT_RANGES:
+                    range_data = DEFAULT_RANGES[test]
+                    default_low = range_data[0]
+                    default_high = range_data[1]
+                else:
+                    # Try fuzzy matching
+                    matched_key = None
+                    best_match_score = 0
+
+                    for key in DEFAULT_RANGES:
+                        # Remove common variations for matching
+                        test_clean = test.lower().replace(" ", "").replace(",", "").replace("(", "").replace(")", "")
+                        key_clean = key.lower().replace(" ", "").replace(",", "").replace("(", "").replace(")", "")
+
+                        # Check for substantial overlap
+                        if test_clean in key_clean or key_clean in test_clean:
+                            score = len(set(test_clean) & set(key_clean)) / len(set(test_clean) | set(key_clean))
+                            if score > best_match_score:
+                                matched_key = key
+                                best_match_score = score
+
+                    if matched_key and best_match_score > 0.5:  # Use threshold for good matches
+                        range_data = DEFAULT_RANGES[matched_key]
+                        default_low = range_data[0]
+                        default_high = range_data[1]
+                    else:
+                        default_low, default_high = "N/A", "N/A"
+
+                # Only use default ranges if they are not already set
+                if not low or low == "N/A":
+                    low = str(default_low)
+                if not high or high == "N/A":
+                    high = str(default_high)
+
+            # CRITICAL CHANGE: ALWAYS preserve original flags from the PDF
+            if original_flag:
+                # Use the flag exactly as it came from the PDF
+                flag = original_flag
+            else:
+                # Only calculate flags when no original flag exists
+                flag = "Normal"
+                try:
+                    if low == "Not Established" or high == "Not Established" or low == "N/A" or high == "N/A":
+                        flag = "Normal"
+                    else:
+                        obs = float(val)
+                        try:
+                            low_val = float(low)
+                            if obs < low_val:
+                                flag = "Low"
+                        except:
+                            pass
+
+                        # Only check high value if it exists and is not empty
+                        if high and high.strip():
+                            try:
+                                high_val = float(high)
+                                if obs > high_val:
+                                    flag = "High"
+                            except:
+                                pass
+                except:
+                    # Non-numeric values handling
+                    if isinstance(val, str):
+                        if any(x in val.lower() for x in ["neg", "negative", "none", "-"]):
+                            flag = "Normal"
+                        elif any(x in val.lower() for x in ["pos", "positive", "+"]):
+                            flag = "High"
+                        elif "high" in val.lower():
+                            flag = "High"
+                        elif "low" in val.lower():
+                            flag = "Low"
+
+        # This line should be inside the loop, indented to match the rest of the loop body
+        final_rows.append({
+            "Date": row['date'],
+            "TestName": test,
+            "ObservedValue": val,
+            "Units": units,
+            "Low": low,
+            "High": high,
+            "Flag": flag
+        })
+
+    # Define sort priority function
+    def sort_priority(row):
+        flag_priority = {flag: i for i, flag in enumerate(["High", "Low", "Abnormal"])}
+        date = datetime.strptime(row["Date"], "%m/%d/%Y")
+        return flag_priority.get(row["Flag"], len(flag_priority)), row["TestName"], date
+
+    # Sort rows by priority and then name
+    final_rows.sort(key=sort_priority)
+
+    # Return the rendered template
+    test_data = defaultdict(lambda: defaultdict(list))
+    for row in final_rows:
+        test = row['TestName']
+        for k, v in row.items():
+            if k == 'TestName':
+                continue
+            if not v.strip() or v.casefold() == 'n/a':
+                v = None
+            test_data[test][k].append(v)
+    return render_template('finaltable.html.j2', rows=final_rows, year=datetime.now().year, testData=test_data)
+

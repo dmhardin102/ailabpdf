@@ -1,0 +1,6 @@
+.pixi/
+__pycache__/
+uploads/
+.git/
+.vscode/
+sample_pdfs/

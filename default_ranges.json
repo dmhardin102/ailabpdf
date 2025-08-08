@@ -1,0 +1,1128 @@
+{
+  "Vitamin B12": [
+    200,
+    1100,
+    "pg/mL"
+  ],
+  "Folate": [
+    3,
+    20,
+    "ng/mL"
+  ],
+  "Folate (Folic Acid)": [
+    3,
+    20,
+    "ng/mL"
+  ],
+  "Iron": [
+    25,
+    150,
+    "mcg/dL"
+  ],
+  "TIBC": [
+    240,
+    450,
+    "mcg/dL"
+  ],
+  "Magnesium": [
+    1.7,
+    2.2,
+    "mg/dL"
+  ],
+  "Phosphate (Inorganic)": [
+    2.5,
+    4.5,
+    "mg/dL"
+  ],
+  "Uric Acid": [
+    2.4,
+    6.0,
+    "mg/dL",
+    3.4,
+    7.0,
+    "mg/dL"
+  ],
+  "Vitamin D, 25-Hydroxy": [
+    30,
+    100,
+    "ng/mL"
+  ],
+  "Vitamin A, Serum": [
+    20,
+    80,
+    "mcg/dL"
+  ],
+  "Vitamin E": [
+    5.5,
+    17,
+    "mg/L"
+  ],
+  "Vitamin B1 (Thiamine)": [
+    6.6,
+    20,
+    "nmol/L"
+  ],
+  "Vitamin K1": [
+    0.2,
+    1.0,
+    "ng/mL"
+  ],
+  "Vitamin C": [
+    0.2,
+    2.0,
+    "mg/dL"
+  ],
+  "Vitamin B7": [
+    200,
+    1200,
+    "pg/mL"
+  ],
+  "Vitamin B6, Plasma": [
+    2.1,
+    21.7,
+    "ng/mL"
+  ],
+  "Vitamin B2, Whole Blood": [
+    50,
+    250,
+    "nmol/L"
+  ],
+  "Zinc": [
+    60,
+    120,
+    "mcg/dL"
+  ],
+  "Zinc, Plasma or Serum": [
+    70,
+    150,
+    "mcg/L"
+  ],
+  "Copper, Serum or Plasm": [
+    70,
+    140,
+    "mcg/dL"
+  ],
+  "Copper, WB": [
+    17,
+    32,
+    "mcg/dL"
+  ],
+  "Selenium, Serum/Plasma": [
+    70,
+    150,
+    "mcg/L"
+  ],
+  "Ceruloplasmin": [
+    20,
+    35,
+    "mg/dL"
+  ],
+  "Methylmalonic Acid, Se": [
+    0.02,
+    0.4,
+    "umol/L"
+  ],
+  "GGT": [
+    8,
+    61,
+    "U/L"
+  ],
+  "Alkaline Phosphatase": [
+    30,
+    120,
+    "U/L"
+  ],
+  "AST (SGOT)": [
+    10,
+    40,
+    "U/L"
+  ],
+  "ALT (SGPT)": [
+    7,
+    56,
+    "U/L"
+  ],
+  "Amylase": [
+    30,
+    110,
+    "U/L"
+  ],
+  "Lipase": [
+    0,
+    60,
+    "U/L"
+  ],
+  "Lactate Dehydrogenase (LDH)": [
+    140,
+    280,
+    "U/L"
+  ],
+  "LDH": [
+    122,
+    222,
+    "U/L"
+  ],
+  "Glucose": [
+    70,
+    99,
+    "mg/dL"
+  ],
+  "Blood Urea Nitrogen (BUN)": [
+    6,
+    20,
+    "mg/dL"
+  ],
+  "Creatinine": [
+    0.6,
+    1.3,
+    "mg/dL"
+  ],
+  "Sodium": [
+    135,
+    145,
+    "mEq/L"
+  ],
+  "Potassium": [
+    3.5,
+    5.1,
+    "mEq/L"
+  ],
+  "Chloride": [
+    98,
+    107,
+    "mEq/L"
+  ],
+  "Carbon Dioxide (CO2)": [
+    22,
+    29,
+    "mEq/L"
+  ],
+  "Calcium": [
+    8.5,
+    10.2,
+    "mg/dL"
+  ],
+  "Anion Gap": [
+    8,
+    16,
+    "mmol/L"
+  ],
+  "Osmolality": [
+    275,
+    295,
+    "mOsm/kg"
+  ],
+  "Cystatin C": [
+    0.53,
+    0.95,
+    "mg/L"
+  ],
+  "eGFR": [
+    59,
+    120,
+    "mL/min/1.73 m^2"
+  ],
+  "Albumin/Creatinine Rat": [
+    0,
+    30,
+    "mg/g"
+  ],
+  "Total Protein": [
+    6.0,
+    8.3,
+    "g/dL"
+  ],
+  "Albumin": [
+    3.4,
+    5.4,
+    "g/dL"
+  ],
+  "Bilirubin, Total": [
+    0.2,
+    1.2,
+    "mg/dL"
+  ],
+  "Ferritin": [
+    16,
+    307,
+    "ng/mL",
+    24,
+    336,
+    "ng/mL"
+  ],
+  "ProAlbumin": [
+    10,
+    25,
+    "mg/dL"
+  ],
+  "Alpha-1-Antitrypsin, S": [
+    83,
+    210,
+    "mg/dL"
+  ],
+  "Alpha-2 Macroglobulins": [
+    150,
+    425,
+    "mg/dL"
+  ],
+  "Protein Elec + Interp - Albumin": [
+    52,
+    68,
+    "%"
+  ],
+  "Protein Elec + Interp - Alpha-1 Globulin": [
+    2.9,
+    5.9,
+    "%"
+  ],
+  "Protein Elec + Interp - Alpha-2 Globulin": [
+    7.1,
+    11.8,
+    "%"
+  ],
+  "Protein Elec + Interp - Beta Globulin": [
+    8.5,
+    14.5,
+    "%"
+  ],
+  "Protein Elec + Interp - Gamma Globulin": [
+    11.1,
+    21.0,
+    "%"
+  ],
+  "Globulin, Total": [
+    2.0,
+    3.5,
+    "g/dL"
+  ],
+  "A/G Ratio": [
+    1.1,
+    2.5,
+    "ratio"
+  ],
+  "Total Cholesterol": [
+    120,
+    200,
+    "mg/dL"
+  ],
+  "HDL Cholesterol": [
+    40,
+    60,
+    "mg/dL"
+  ],
+  "LDL Cholesterol": [
+    0,
+    100,
+    "mg/dL"
+  ],
+  "Triglycerides": [
+    0,
+    150,
+    "mg/dL"
+  ],
+  "Lipoprotein (a)": [
+    0,
+    30,
+    "mg/dL"
+  ],
+  "Troponin I": [
+    0.0,
+    0.04,
+    "ng/mL"
+  ],
+  "CK-MB": [
+    0.0,
+    5.0,
+    "ng/mL"
+  ],
+  "Creatine Kinase (CK)": [
+    24,
+    170,
+    "U/L",
+    24,
+    195,
+    "U/L"
+  ],
+  "B-type Natriuretic Peptide (BNP)": [
+    0,
+    100,
+    "pg/mL"
+  ],
+  "NT-proBNP": [
+    0,
+    125,
+    "pg/mL"
+  ],
+  "Apolipoprotein B": [
+    0,
+    130,
+    "mg/dL"
+  ],
+  "Lp-PLA2 Activity": [
+    200,
+    375,
+    "ng/mL"
+  ],
+  "ADMA/SDMA": [
+    0.2,
+    0.75,
+    "umol/L"
+  ],
+  "White Blood Cell Count (WBC)": [
+    4.0,
+    10.0,
+    "x10^9/L"
+  ],
+  "Red Blood Cell Count (RBC)": [
+    4.2,
+    5.4,
+    "x10^12/L",
+    4.7,
+    6.1,
+    "x10^12/L"
+  ],
+  "Hemoglobin (Hgb)": [
+    12.0,
+    16.0,
+    "g/dL",
+    13.5,
+    17.5,
+    "g/dL"
+  ],
+  "Hematocrit (Hct)": [
+    37,
+    47,
+    "%",
+    41,
+    53,
+    "%"
+  ],
+  "Mean Corpuscular Volume (MCV)": [
+    80,
+    100,
+    "fL"
+  ],
+  "Mean Corpuscular Hemoglobin (MCH)": [
+    27,
+    33,
+    "pg"
+  ],
+  "Mean Corpuscular Hemoglobin Concentration (MCHC)": [
+    32,
+    36,
+    "g/dL"
+  ],
+  "Platelet Count": [
+    150,
+    400,
+    "x10^9/L"
+  ],
+  "Mean Platelet Volume (MPV)": [
+    7.5,
+    11.5,
+    "fL"
+  ],
+  "Reticulocyte Count": [
+    0.5,
+    2.5,
+    "%"
+  ],
+  "Neutrophils": [
+    2.0,
+    7.0,
+    "x10^9/L"
+  ],
+  "Lymphocytes": [
+    1.0,
+    4.0,
+    "x10^9/L"
+  ],
+  "Monocytes": [
+    0.2,
+    1.0,
+    "x10^9/L"
+  ],
+  "Eosinophils": [
+    0.0,
+    0.5,
+    "x10^9/L"
+  ],
+  "Basophils": [
+    0.0,
+    0.2,
+    "x10^9/L"
+  ],
+  "Neutrophils %": [
+    "Not Established",
+    "%"
+  ],
+  "Lymphocytes %": [
+    "Not Established",
+    "%"
+  ],
+  "Monocytes %": [
+    "Not Established",
+    "%"
+  ],
+  "Eosinophils %": [
+    "Not Established",
+    "%"
+  ],
+  "Basophils %": [
+    "Not Established",
+    "%"
+  ],
+  "Lymphs (Absolute)": [
+    0.7,
+    3.1,
+    "x10^9/L"
+  ],
+  "Immature Grans (Abs)": [
+    0.0,
+    0.1,
+    "x10^9/L"
+  ],
+  "Erythropoietin (EPO)": [
+    4.3,
+    29,
+    "mIU/mL"
+  ],
+  "Hemoglobin, Free, Plas": [
+    0,
+    5,
+    "mg/dL"
+  ],
+  "Hemoglobin, Free, Qual": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Hgb Solubility": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Prothrombin Time (PT)": [
+    11,
+    13.5,
+    "sec"
+  ],
+  "International Normalized Ratio (INR)": [
+    0.8,
+    1.2,
+    "ratio"
+  ],
+  "Activated Partial Thromboplastin Time (aPTT)": [
+    25,
+    35,
+    "sec"
+  ],
+  "Fibrinogen": [
+    200,
+    400,
+    "mg/dL"
+  ],
+  "Fibrinogen Activity": [
+    200,
+    400,
+    "mg/dL"
+  ],
+  "D-Dimer": [
+    0,
+    0.5,
+    "mg/L FEU"
+  ],
+  "Erythrocyte Sedimentation Rate (ESR)": [
+    0,
+    20,
+    "mm/hr"
+  ],
+  "C-Reactive Protein, Qu": [
+    0,
+    1.0,
+    "mg/dL"
+  ],
+  "High-sensitivity CRP (hs-CRP)": [
+    0.0,
+    3.0,
+    "mg/L"
+  ],
+  "Sedimentation Rate-Wes": [
+    0,
+    20,
+    "mm/hr",
+    0,
+    15,
+    "mm/hr"
+  ],
+  "C-Reactive Protein, Ca": [
+    0,
+    1.0,
+    "mg/dL"
+  ],
+  "Cryoglobulin, Ql, Seru": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Cryofibrinogen, Qualit": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Viscosity, Serum": [
+    1.4,
+    1.8,
+    "cP"
+  ],
+  "TSH": [
+    0.45,
+    4.5,
+    "\u03bcIU/mL"
+  ],
+  "Thyroid Profile II - TSH": [
+    0.4,
+    4.0,
+    "\u03bcIU/mL"
+  ],
+  "Triiodothyronine (T3), Total": [
+    80,
+    200,
+    "ng/dL"
+  ],
+  "Triiodothyronine (T3), Free": [
+    2.3,
+    4.2,
+    "pg/mL"
+  ],
+  "Thyroxine (T4), Total": [
+    4.5,
+    12.0,
+    "ug/dL"
+  ],
+  "Thyroxine (T4), Free": [
+    0.8,
+    1.8,
+    "ng/dL"
+  ],
+  "Free Thyroxine + T4": [
+    0.8,
+    1.8,
+    "ng/dL"
+  ],
+  "Thyroid Profile II - Free T4": [
+    0.8,
+    1.8,
+    "ng/dL"
+  ],
+  "Thyroid Profile II - Total T3": [
+    80,
+    200,
+    "ng/dL"
+  ],
+  "Thyroid Peroxidase (TPO) Ab": [
+    0,
+    9,
+    "IU/mL"
+  ],
+  "Thyroglobulin Antibody": [
+    0,
+    40,
+    "IU/mL"
+  ],
+  "Thyroid Antibodies": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Reverse T3, Serum": [
+    9,
+    27,
+    "ng/dL"
+  ],
+  "Triiodothyronine (Total)": [
+    70,
+    204,
+    "ng/dL"
+  ],
+  "FSH": [
+    1.4,
+    18.1,
+    "mIU/mL",
+    1.5,
+    12.4,
+    "mIU/mL"
+  ],
+  "LH": [
+    1.0,
+    11.4,
+    "mIU/mL",
+    1.7,
+    8.6,
+    "mIU/mL"
+  ],
+  "Prolactin": [
+    4,
+    23,
+    "ng/mL",
+    2,
+    18,
+    "ng/mL"
+  ],
+  "Estradiol": [
+    15,
+    350,
+    "pg/mL",
+    10,
+    40,
+    "pg/mL"
+  ],
+  "Progesterone": [
+    0.1,
+    20,
+    "ng/mL",
+    0.1,
+    1.0,
+    "ng/mL"
+  ],
+  "Testosterone, Total": [
+    15,
+    70,
+    "ng/dL",
+    270,
+    1070,
+    "ng/dL"
+  ],
+  "Testosterone, Free": [
+    0.5,
+    3.3,
+    "pg/mL",
+    9,
+    30,
+    "pg/mL"
+  ],
+  "DHEA-Sulfate": [
+    35,
+    430,
+    "ug/dL",
+    180,
+    1250,
+    "ug/dL"
+  ],
+  "Sex Hormone Binding Globulin": [
+    18,
+    144,
+    "nmol/L",
+    13,
+    71,
+    "nmol/L"
+  ],
+  "Cortisol": [
+    6.2,
+    19.4,
+    "mcg/dL"
+  ],
+  "ACTH, Plasma": [
+    6,
+    50,
+    "pg/mL"
+  ],
+  "hCG, Beta Subunit, Qual": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Estradiol, Sensitive": [
+    5,
+    75,
+    "pg/mL"
+  ],
+  "Dihydrotestosterone": [
+    250,
+    990,
+    "pg/mL"
+  ],
+  "DHT, Free, LCMS/Dialys": [
+    30,
+    85,
+    "pg/mL"
+  ],
+  "Estrogens, Total": [
+    20,
+    400,
+    "pg/mL"
+  ],
+  "Testosterone,Free and": [
+    9,
+    300,
+    "pg/mL"
+  ],
+  "Free Testosterone(Direct)": [
+    9,
+    30,
+    "pg/mL"
+  ],
+  "Testosterone, Free, Di": [
+    9,
+    30,
+    "pg/mL"
+  ],
+  "Sex Horm Binding Glob": [
+    10,
+    80,
+    "nmol/L"
+  ],
+  "Luteinizing Hormone(LH": [
+    1.68,
+    15,
+    "mIU/mL"
+  ],
+  "FSH and LH": [
+    1.68,
+    15,
+    "mIU/mL",
+    0.61,
+    12,
+    "mIU/mL"
+  ],
+  "Testosterone, Free+Tot": [
+    270,
+    1070,
+    "ng/dL",
+    9,
+    300,
+    "pg/mL"
+  ],
+  "Pregnenolone, MS": [
+    13,
+    203,
+    "ng/dL"
+  ],
+  "TestosteroneTestosterone,Free+Weak": [
+    270,
+    1070,
+    "ng/dL"
+  ],
+  "Estrone, Serum": [
+    17,
+    200,
+    "pg/mL"
+  ],
+  "Androstenedione LCMS": [
+    0.3,
+    3.5,
+    "ng/mL"
+  ],
+  "Androstanediol Gluc, E": [
+    1,
+    14,
+    "ng/dL"
+  ],
+  "DHEA, Serum": [
+    280,
+    6400,
+    "ng/dL"
+  ],
+  "Insulin": [
+    2.6,
+    24.9,
+    "\u03bcIU/mL"
+  ],
+  "C-peptide": [
+    0.5,
+    2.0,
+    "ng/mL"
+  ],
+  "Homocysteine": [
+    5,
+    15,
+    "\u03bcmol/L"
+  ],
+  "Hgb A1c with eAG Estim": [
+    4.0,
+    5.6,
+    "%"
+  ],
+  "Homocyst(e)ine": [
+    0,
+    15,
+    "\u03bcmol/L"
+  ],
+  "Hemoglobin A1c": [
+    4.0,
+    5.6,
+    "%"
+  ],
+  "Insulin and C-Peptide": [
+    0.5,
+    3.0,
+    "ng/mL"
+  ],
+  "Fructosamine": [
+    200,
+    285,
+    "\u03bcmol/L"
+  ],
+  "Glucagon, Plasma": [
+    50,
+    100,
+    "pg/mL"
+  ],
+  "Insulin Antibodies": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Serum IgG": [
+    700,
+    1600,
+    "mg/dL"
+  ],
+  "Serum IgA": [
+    70,
+    400,
+    "mg/dL"
+  ],
+  "Serum IgM": [
+    40,
+    230,
+    "mg/dL"
+  ],
+  "Complement C4, Serum": [
+    12,
+    72,
+    "mg/dL"
+  ],
+  "Complement, Total (CH5": [
+    75,
+    160,
+    "U/mL"
+  ],
+  "Complement C3, Serum": [
+    83,
+    177,
+    "mg/dL"
+  ],
+  "Complement C1q, Quanti": [
+    14.5,
+    36.5,
+    "mg/dL"
+  ],
+  "Complement C2": [
+    1.7,
+    4.5,
+    "mg/dL"
+  ],
+  "Prostate-Specific Ag": [
+    0,
+    4.0,
+    "ng/mL"
+  ],
+  "PSA Total+% Free": [
+    0,
+    4.0,
+    "ng/mL"
+  ],
+  "CA 27.29": [
+    0,
+    38,
+    "U/mL"
+  ],
+  "Cancer Antigen (CA) 12": [
+    0,
+    35,
+    "U/mL"
+  ],
+  "Prostate Health Index": [
+    0,
+    35,
+    ""
+  ],
+  "IGF-1 with Z-Score": [
+    75,
+    250,
+    "ng/mL"
+  ],
+  "IGF-1": [
+    75,
+    250,
+    "ng/mL"
+  ],
+  "Growth Hormone, Serum": [
+    0,
+    5,
+    "ng/mL"
+  ],
+  "FANA Staining Patterns": [
+    "Negative",
+    "Qualitative"
+  ],
+  "ANA by IFA Rfx Titer/P": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Intrinsic Factor Abs": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Anti-Nuclear Ab by IFA": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Anti-Ro (SS-A) Ab (RDL": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Antichromatin Antibodi": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Antibody Screen": [
+    "Negative",
+    "Qualitative"
+  ],
+  "MTHFR": [
+    "Genotype",
+    "Qualitative"
+  ],
+  "Antigliadin IgG (nativ": [
+    0,
+    20,
+    "Units"
+  ],
+  "Urinalysis, Complete - Color": [
+    "Yellow",
+    "Descriptive"
+  ],
+  "Urinalysis, Complete - Appearance": [
+    "Clear",
+    "Descriptive"
+  ],
+  "Urinalysis, Complete - Specific Gravity": [
+    1.002,
+    1.03,
+    ""
+  ],
+  "Urinalysis, Complete - pH": [
+    4.5,
+    8.0,
+    ""
+  ],
+  "Urinalysis, Complete - Protein": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Urinalysis, Complete - Glucose": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Urinalysis, Complete - Ketones": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Urinalysis, Complete - Bilirubin": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Urinalysis, Complete - Blood": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Urinalysis, Complete - Urobilinogen": [
+    0.2,
+    1.0,
+    "mg/dL"
+  ],
+  "Urinalysis, Complete - Nitrite": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Urinalysis, Complete - Leukocyte Esterase": [
+    "Negative",
+    "Qualitative"
+  ],
+  "Urinalysis, Complete - Red Blood Cells": [
+    0,
+    2,
+    "/HPF"
+  ],
+  "Urinalysis, Complete - White Blood Cells": [
+    0,
+    5,
+    "/HPF"
+  ],
+  "Urinalysis, Complete - Epithelial Cells": [
+    "Few",
+    "Descriptive"
+  ],
+  "Urinalysis, Complete - Casts": [
+    "None",
+    "Qualitative"
+  ],
+  "Urinalysis, Complete - Crystals": [
+    "None",
+    "Qualitative"
+  ],
+  "Urinalysis, Complete - Bacteria": [
+    "None",
+    "Qualitative"
+  ],
+  "Osmolality, Urine": [
+    50,
+    1400,
+    "mOsm/kg"
+  ],
+  "Immunofixation, Urine": [
+    "No monoclonal protein",
+    "Qualitative"
+  ],
+  "Urine Culture,Comprehe": [
+    "No growth",
+    "Qualitative"
+  ],
+  "Serotonin, Serum": [
+    50,
+    220,
+    "ng/mL"
+  ],
+  "Gastrin, Serum": [
+    0,
+    100,
+    "pg/mL"
+  ],
+  "Sirolimus (Rapamune)": [
+    5,
+    15,
+    "ng/mL"
+  ],
+  "Lithium (Eskalith(R))": [
+    0.6,
+    1.2,
+    "mEq/L"
+  ],
+  "Measles Antibodies, Ig": [
+    "Negative or Positive",
+    "Qualitative"
+  ],
+  "HAV, HBV Immunity": [
+    "Positive",
+    "Qualitative"
+  ],
+  "Tetanus/Diphtheria Ab": [
+    0.1,
+    10,
+    "IU/mL"
+  ],
+  "Viral Culture, General": [
+    "No virus isolated",
+    "Qualitative"
+  ],
+  "BUN/Creatinine Ratio": [
+    9,
+    20,
+    "ratio"
+  ],
+  "eGFR, Non-African American": [
+    59,
+    null,
+    "mL/min/1.73 m^2"
+  ],
+  "eGFR, African American": [
+    59,
+    null,
+    "mL/min/1.73 m^2"
+  ]
+}

@@ -1,0 +1,12 @@
+services:
+  rlpublic:
+    container_name: rlpublic
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - .:/app

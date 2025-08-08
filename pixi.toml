@@ -1,0 +1,14 @@
+[project]
+name = "rlinsiders"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tasks]
+
+[dependencies]
+python = "3.12.*"
+flask = ">=3.1.0,<4"
+gunicorn = "*"       # Add gunicorn
+
+[pypi-dependencies]
+pymupdf = ">=1.25.2,<1.25.3"
