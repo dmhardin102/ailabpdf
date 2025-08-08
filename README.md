@@ -1,4 +1,4 @@
-# rlinsiders
+# Lab Report Parser and Visualizer
 
 This tool will faciliate tabulation and charting of test results from uploading a pdf of their results voluntarily.
 
@@ -6,14 +6,14 @@ Step 1: Ensure accurate parsing from pdf into table. Auto-detection preferred, b
 
 Raw and Standardized columns for variables detected (Test Name, Symbol, Unit, Reference Range, Flag)
 
-Key outcome is to associate a value in the report with the correct test name. The unit, reference range, and resultant flag can reference standardized JSON file. 
+Key outcome is to associate a value in the report with the correct test name. The unit, reference range, and resultant flag can reference standardized JSON file.
 
-upapp.py code developed for parsing, table creation, and charting for single pdf. 
+Visualization of single test results in charts with annotation highlighting abnormal values.
 
-Desire to merge trend code to single pdf upapp.py for full solution.
+Upload multiple pdfs for trending changes in biomarkers over time. Dates and results can be auto-detected, but confirmed by manually before export or storage.
 
-Step 2: Visualization of single test results in charts with annotation highlighting abnormal values.
+Trends can be hghlighted with annotations.
 
-Step 3: Upload multiple pdfs for trending changes in biomarkers over time. Dates and results can be auto-detected, but confirmed by manually before export or storage.
-
-Step 4: Secure login mechanism to view stored pdfs, reports, and trends with mobile and web application.
+Next steps: calculate HDL/Trig ratio, HOMA-IR, and A1c estimated average glucose.
+Secure app via user authentication and encrypted storage of data.
+Securely interact with LLM to generate plain language summaries of results and trends.
