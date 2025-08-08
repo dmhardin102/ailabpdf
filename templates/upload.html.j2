@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Upload LabCorp PDF - Fitomics Research Labs</title>
+  <title>Upload LabCorp PDF</title>
   <style>
     html, body {
       height: 100%;
@@ -117,12 +117,9 @@
   </style>
 </head>
 <body>
-
-  <img src="/static/fitomicslogomarknavy.png" alt="Fitomics Research Labs Watermark" class="background-watermark">
-
+  
   <div class="content">
     <div class="upload-container">
-      <img src="/static/fitresearchlabs.png" alt="Fitomics Logo">
       <h1>Upload Your LabCorp PDF(s)</h1>
       <h3>Select One or More PDFs to Analyze and Trend Results </h3>
       <form class="upload-form" method="POST" enctype="multipart/form-data" action="/parse">
@@ -136,10 +133,6 @@
       <p>For best results, please only upload PDFs directly downloaded from LabCorp</p>
     </div>
   </div>
-
-  <footer>
-    &copy; {{year}} Fitomics Research Labs. All rights reserved.
-  </footer>
 
   <script>
     const fileInput = document.getElementById('file-upload');
