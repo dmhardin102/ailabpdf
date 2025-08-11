@@ -134,6 +134,31 @@
       background-color: #e5f0ff;
     }
 
+    .metrics-section {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 59, 89, .15);
+      padding: 20px;
+      margin-bottom: 40px;
+    }
+    .metrics-section h2 {
+      color: #003b59;
+      font-size: 1.5em;
+      margin-top: 0;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .metrics-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .metrics-section li {
+      padding: 6px 0;
+      text-align: center;
+      font-size: 1em;
+    }
+
     /* Add chart section styles */
     .chart-section {
       margin-top: 60px;
@@ -198,6 +223,15 @@
   <a href="javascript:history.back()">Go Back/Review PDF Results</a>
   <a href="/">Start Over with New Files</a>
   <a href="#" onclick="exportToCSV()" id="exportBtn">Export to CSV</a>
+</div>
+
+<div class="metrics-section">
+  <h2>Insulin Resistance Measures</h2>
+  <ul>
+    <li>Triglyceride to HDL ratio: {{ insulin_metrics.trig_hdl_ratio if insulin_metrics.trig_hdl_ratio is not none else 'calculation unavailable' }}</li>
+    <li>HOMA-IR: {{ insulin_metrics.homa_ir if insulin_metrics.homa_ir is not none else 'calculation unavailable' }}</li>
+    <li>Estimated Average Glucose: {{ insulin_metrics.estimated_average_glucose if insulin_metrics.estimated_average_glucose is not none else 'calculation unavailable' }}</li>
+  </ul>
 </div>
 
 <table id="resultsTable">
