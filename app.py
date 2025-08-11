@@ -247,8 +247,16 @@ def final():
                     return None
         return None
 
-    triglycerides = get_numeric("Triglycerides")
-    hdl = get_numeric("HDL Cholesterol")
+
+    def get_numeric_any(*names):
+        for name in names:
+            val = get_numeric(name)
+            if val is not None:
+                return val
+        return None
+
+    triglycerides = get_numeric_any("Lipid Panel - Triglycerides", "Triglycerides")
+    hdl = get_numeric_any("HDL-C", "HDL Cholesterol")
     insulin = get_numeric("Insulin")
     glucose = get_numeric("Glucose")
     a1c = get_numeric("Hemoglobin A1c")
