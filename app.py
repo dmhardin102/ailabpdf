@@ -237,6 +237,34 @@ def final():
 
     # Sort rows by priority and then name
     final_rows.sort(key=sort_priority)
+    # Helper to pull numeric values for specific tests
+    def get_numeric(test_name):
+        for r in final_rows:
+            if r["TestName"].casefold() == test_name.casefold():
+                try:
+                    return float(re.sub(r"[^0-9.\-]", "", r["ObservedValue"]))
+                except Exception:
+                    return None
+        return None
+
+    def get_numeric_any(*names):
+        for name in names:
+            val = get_numeric(name)
+            if val is not None:
+                return val
+        return None
+
+    triglycerides = get_numeric_any("Lipid Panel - Triglycerides", "Triglycerides")
+    hdl = get_numeric_any("HDL-C", "HDL Cholesterol")
+    insulin = get_numeric("Insulin")
+    glucose = get_numeric("Glucose")
+    a1c = get_numeric("Hemoglobin A1c")
+
+    insulin_metrics = {
+        "trig_hdl_ratio": round(triglycerides / hdl, 2) if triglycerides is not None and hdl not in [None, 0] else None,
+        "homa_ir": round((insulin * glucose) / 405, 2) if insulin is not None and glucose is not None else None,
+        "estimated_average_glucose": round(28.7 * a1c - 46.7, 2) if a1c is not None else None,
+    }
 
     # Return the rendered template
     test_data = defaultdict(lambda: defaultdict(list))
@@ -248,5 +276,5 @@ def final():
             if not v.strip() or v.casefold() == 'n/a':
                 v = None
             test_data[test][k].append(v)
-    return render_template('finaltable.html.j2', rows=final_rows, year=datetime.now().year, testData=test_data)
+    return render_template('finaltable.html.j2', rows=final_rows, year=datetime.now().year, testData=test_data, insulin_metrics=insulin_metrics)
 
