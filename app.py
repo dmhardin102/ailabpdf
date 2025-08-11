@@ -247,6 +247,7 @@ def final():
                     return None
         return None
 
+
     def get_numeric_any(*names):
         for name in names:
             val = get_numeric(name)
