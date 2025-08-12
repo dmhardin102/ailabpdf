@@ -3,6 +3,8 @@ import os
 import re
 from datetime import datetime
 from flask import Flask, request, render_template, send_from_directory
+from dotenv import load_dotenv
+from google import genai
 
 from parse import parse_labcorp_pdf
 import fitz
@@ -10,6 +12,9 @@ import fitz
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+load_dotenv()
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 from json import load
 with open('default_ranges.json') as f:
@@ -279,3 +284,33 @@ def final():
             test_data[test][k].append(v)
     return render_template('finaltable.html.j2', rows=final_rows, year=datetime.now().year, testData=test_data, insulin_metrics=insulin_metrics)
 
+
+@app.route("/ai_summary", methods=["POST"])
+def ai_summary():
+    data = request.get_json(force=True)
+    rows = data.get("rows", [])
+    metrics = data.get("insulin_metrics", {})
+
+    lab_lines = [
+        f"{r['TestName']}: {r['ObservedValue']} {r['Units']} (Low: {r['Low']}, High: {r['High']}, Flag: {r['Flag']})"
+        for r in rows
+    ]
+    metric_lines = [f"{k}: {v}" for k, v in metrics.items() if v is not None]
+
+    prompt = (
+        "please review all these lab markers and calculations around insulin resistance. "
+        "Please highlight the risk of insulin resistance for the table of values, and also note any other lab findings "
+        "that may be indicative of disease or require follow-up labs and physician discussion.\n\n" 
+        "Insulin Metrics:\n" + "\n".join(metric_lines) + "\n\nLab Values:\n" + "\n".join(lab_lines)
+    )
+
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-001",
+            contents=[prompt],
+        )
+        summary = response.text
+    except Exception as e:
+        summary = f"Error generating summary: {e}"
+
+    return {"summary": summary}

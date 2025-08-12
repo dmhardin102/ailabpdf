@@ -159,6 +159,21 @@
       font-size: 1em;
     }
 
+    .ai-summary-section {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 59, 89, .15);
+      padding: 20px;
+      margin-bottom: 40px;
+    }
+    .ai-summary-section h2 {
+      color: #003b59;
+      font-size: 1.5em;
+      margin-top: 0;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
     /* Add chart section styles */
     .chart-section {
       margin-top: 60px;
@@ -223,6 +238,7 @@
   <a href="javascript:history.back()">Go Back/Review PDF Results</a>
   <a href="/">Start Over with New Files</a>
   <a href="#" onclick="exportToCSV()" id="exportBtn">Export to CSV</a>
+  <a href="#" id="aiSummaryBtn">Get AI Lab Summary</a>
 </div>
 
 <div class="metrics-section">
@@ -232,6 +248,11 @@
     <li>HOMA-IR: {{ insulin_metrics.homa_ir if insulin_metrics.homa_ir is not none else 'calculation unavailable' }}</li>
     <li>Estimated Average Glucose: {{ insulin_metrics.estimated_average_glucose if insulin_metrics.estimated_average_glucose is not none else 'calculation unavailable' }}</li>
   </ul>
+</div>
+
+<div id="ai-summary-section" class="ai-summary-section" style="display:none;">
+  <h2>AI Lab Summary</h2>
+  <div id="ai-summary-content"></div>
 </div>
 
 <table id="resultsTable">
@@ -279,6 +300,32 @@
 </div>
 
 <script>
+const allRowsData = {{ rows|tojson }};
+const insulinMetrics = {{ insulin_metrics|tojson }};
+
+document.getElementById('aiSummaryBtn').addEventListener('click', async (e) => {
+  e.preventDefault();
+  const btn = e.currentTarget;
+  btn.textContent = 'Loading...';
+  try {
+    const response = await fetch('/ai_summary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rows: allRowsData, insulin_metrics: insulinMetrics })
+    });
+    const data = await response.json();
+    const section = document.getElementById('ai-summary-section');
+    document.getElementById('ai-summary-content').textContent = data.summary;
+    section.style.display = 'block';
+  } catch (err) {
+    const section = document.getElementById('ai-summary-section');
+    section.style.display = 'block';
+    document.getElementById('ai-summary-content').textContent = 'Error retrieving AI summary.';
+  } finally {
+    btn.textContent = 'Get AI Lab Summary';
+  }
+});
+
 // Sort table to show abnormal rows first
 window.addEventListener('DOMContentLoaded', function() {
   const tableBody = document.querySelector('#resultsTable tbody');
