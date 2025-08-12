@@ -4,3 +4,10 @@ uploads/
 .git/
 .vscode/
 sample_pdfs/
+.env
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
