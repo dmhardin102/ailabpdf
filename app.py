@@ -298,8 +298,8 @@ def ai_summary():
     metric_lines = [f"{k}: {v}" for k, v in metrics.items() if v is not None]
 
     prompt = (
-        "please review all these lab markers and calculations around insulin resistance. "
-        "Please highlight the risk of insulin resistance for the table of values, and also note any other lab findings "
+        "Please review included lab markers and calculated values with regard to the condition of insulin resistance. "
+        "Please highlight the risk of insulin resistance based on these values, and also note any other lab findings "
         "that may be indicative of disease or require follow-up labs and physician discussion.\n\n"
         "Please provide a concise summary in 2-3 paragraphs.\n\n" +
         "Insulin Metrics:\n" + "\n".join(metric_lines) + "\n\nLab Values:\n" + "\n".join(lab_lines)
