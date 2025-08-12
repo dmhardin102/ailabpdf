@@ -12,3 +12,5 @@ gunicorn = "*"       # Add gunicorn
 
 [pypi-dependencies]
 pymupdf = ">=1.25.2,<1.25.3"
+google-genai = "==1.12.1"
+python-dotenv = "==1.1.0"
