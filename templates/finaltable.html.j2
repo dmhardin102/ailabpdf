@@ -201,6 +201,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
+      position: relative;
       transition: transform 0.3s ease;
     }
     .chart-container:hover {
@@ -212,6 +213,12 @@
       color: #003b59;
       margin-bottom: 10px;
       text-align: center;
+    }
+    .chart-checkbox {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      transform: scale(1.2);
     }
     footer {
       margin-top: 40px;
@@ -234,12 +241,13 @@
   <p>Click on a row to expand field and create annotations for file export.</p>
 </header>
 
-<div class="navigation">
-  <a href="javascript:history.back()">Go Back/Review PDF Results</a>
-  <a href="/">Start Over with New Files</a>
-  <a href="#" onclick="exportToCSV()" id="exportBtn">Export to CSV</a>
-  <a href="#" id="aiSummaryBtn">Get AI Lab Summary</a>
-</div>
+  <div class="navigation">
+    <a href="javascript:history.back()">Go Back/Review PDF Results</a>
+    <a href="/">Start Over with New Files</a>
+    <a href="#" onclick="exportToCSV()" id="exportBtn">Export to CSV</a>
+    <a href="#" id="aiSummaryBtn">Get AI Lab Summary</a>
+    <a href="#" id="downloadPdfBtn">Download PDF Report</a>
+  </div>
 
 <div class="metrics-section">
   <h2>Insulin Resistance Measures</h2>
@@ -443,6 +451,10 @@ for (const [name, data] of Object.entries(testData)) {
 
   const card = document.createElement('div');
   card.className = 'chart-container';
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.className = 'chart-checkbox';
+  card.appendChild(checkbox);
   const title = document.createElement('div');
   title.className = 'chart-title';
   title.textContent = name;
@@ -465,6 +477,9 @@ for (const [name, data] of Object.entries(testData)) {
         data: points,
         pointRadius: 7,
         pointHoverRadius: 14,
+        showLine: points.length > 1,
+        borderColor: '#003b59',
+        fill: false,
       }]
     },
     options: {
@@ -559,6 +574,37 @@ for (const [name, data] of Object.entries(testData)) {
     plugins: [ChartDataLabels]
   });
 };
+
+document.getElementById('downloadPdfBtn').addEventListener('click', async (e) => {
+  e.preventDefault();
+  const charts = [];
+  document.querySelectorAll('.chart-container').forEach(container => {
+    const cb = container.querySelector('.chart-checkbox');
+    if (cb && cb.checked) {
+      const name = container.querySelector('.chart-title').textContent;
+      const canvas = container.querySelector('canvas');
+      charts.push({ name, image: canvas.toDataURL('image/png') });
+    }
+  });
+  if (!charts.length) {
+    alert('Please select at least one chart.');
+    return;
+  }
+  const response = await fetch('/chart_report', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ charts })
+  });
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'lab_charts.pdf';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+});
 </script>
 
 </body>
