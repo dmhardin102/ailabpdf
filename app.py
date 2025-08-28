@@ -2,12 +2,17 @@ from collections import defaultdict
 import os
 import re
 from datetime import datetime
-from flask import Flask, request, render_template, send_from_directory
+from flask import Flask, request, render_template, send_from_directory, send_file
 from dotenv import load_dotenv
 from google import genai
 
 from parse import parse_labcorp_pdf
 import fitz
+import io
+import base64
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
@@ -315,3 +320,48 @@ def ai_summary():
         summary = f"Error generating summary: {e}"
 
     return {"summary": summary}
+
+
+@app.route("/chart_report", methods=["POST"])
+def chart_report():
+    data = request.get_json(force=True)
+    charts = data.get("charts", [])
+
+    pdf_buffer = io.BytesIO()
+    c = canvas.Canvas(pdf_buffer, pagesize=letter)
+    width, height = letter
+
+    for chart in charts:
+        name = chart.get("name", "")
+        image = chart.get("image")
+        if not image:
+            continue
+
+        # Decode the base64-encoded image
+        img_bytes = base64.b64decode(image.split(",", 1)[1])
+        img = ImageReader(io.BytesIO(img_bytes))
+
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(40, height - 40, name)
+
+        img_w, img_h = img.getSize()
+        max_w, max_h = width - 80, height - 120
+        scale = min(max_w / img_w, max_h / img_h)
+        c.drawImage(
+            img,
+            40,
+            height - 80 - img_h * scale,
+            img_w * scale,
+            img_h * scale,
+        )
+        c.showPage()
+
+    c.save()
+    pdf_buffer.seek(0)
+
+    return send_file(
+        pdf_buffer,
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name="lab_charts.pdf",
+    )
