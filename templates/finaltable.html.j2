@@ -4,233 +4,65 @@
   <meta charset="UTF-8">
   <title>Parsed Lab Results</title>
   <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(to bottom, #ffffff, #e4ac61);
-      min-height: 100vh;
-      color: #003b59;
-    }
-    header {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    header img {
-      width: 240px;
-      margin-bottom: 10px;
-    }
-    header h1 {
-      font-size: 2em;
-      margin: 0;
-      color: #003b59;
-    }
-    
-    /* Navigation styles */
-    .navigation {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-    .navigation a {
-      display: inline-block;
-      padding: 10px 20px;
-      background: linear-gradient(to right, #e4ac61, #c19962);
-      color: #003b59;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0, 59, 89, .2);
-      transition: all 0.3s ease;
-    }
-    .navigation a:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0, 59, 89, .3);
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 40px;
-      background: #ffffff;
-      box-shadow: 0 4px 20px rgba(0, 59, 89, .15);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-    th, td {
-      padding: 12px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-      font-size: .95em;
-    }
-    th {
-      background: linear-gradient(to right, #e4ac61, #c19962);
-      color: #003b59;
-      font-weight: bold;
-      font-size: 1em;
-    }
-    tr:hover {
-      background-color: #f5f5f5;
-    }
+    body { margin: 0; padding: 20px; font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(to bottom, #ffffff, #e4ac61); min-height: 100vh; color: #003b59; }
+    header { text-align: center; margin-bottom: 15px; }
+    header h1 { font-size: 2em; margin: 0; color: #003b59; }
 
-    /* Expandable row styles */
-    tr.expandable {
-      cursor: pointer;
-    }
-    tr.expandable:hover {
-      background-color: rgba(228, 172, 97, 0.1);
-    }
-    tr.expandable td:first-child {
-      position: relative;
-      padding-left: 30px;
-    }
-    tr.expandable td:first-child:before {
-      content: "▶";
-      position: absolute;
-      left: 10px;
-      color: #003b59;
-      transition: transform 0.2s;
-    }
-    tr.expanded td:first-child:before {
-      content: "▼";
-    }
-    tr.details-row {
-      display: none;
-    }
-    tr.details-row.visible {
-      display: table-row;
-      animation: fadeIn 0.5s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    .navigation { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; }
+    .navigation a { display: inline-block; padding: 10px 20px; background: linear-gradient(to right, #e4ac61, #c19962);
+      color: #003b59; text-decoration: none; border-radius: 8px; font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0, 59, 89, .2); transition: all 0.3s ease; }
+    .navigation a:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 59, 89, .3); }
 
-    .details-content {
-      padding: 15px;
-      background-color: #f9f9f9;
-      text-align: left;
-    }
-    .details-content h3 {
-      margin-top: 0;
-      color: #003b59;
-    }
-    .details-content textarea {
-      width: 100%;
-      min-height: 100px;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-family: inherit;
-      margin-top: 10px;
-    }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 40px; background: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 59, 89, .15); border-radius: 16px; overflow: hidden; }
+    th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; font-size: .95em; }
+    th { background: linear-gradient(to right, #e4ac61, #c19962); color: #003b59; font-weight: bold; font-size: 1em; }
+    tr:hover { background-color: #f5f5f5; }
 
-    /* Status colors */
-    .high-status {
-      background-color: #ffe5e5;
-    }
-    .low-status {
-      background-color: #e5f0ff;
-    }
+    tr.expandable { cursor: pointer; }
+    tr.expandable:hover { background-color: rgba(228, 172, 97, 0.1); }
+    tr.expandable td:first-child { position: relative; padding-left: 30px; }
+    tr.expandable td:first-child:before { content: "▶"; position: absolute; left: 10px; color: #003b59; transition: transform 0.2s; }
+    tr.expanded td:first-child:before { content: "▼"; }
+    tr.details-row { display: none; }
+    tr.details-row.visible { display: table-row; animation: fadeIn 0.5s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    .metrics-section {
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 59, 89, .15);
-      padding: 20px;
-      margin-bottom: 40px;
-    }
-    .metrics-section h2 {
-      color: #003b59;
-      font-size: 1.5em;
-      margin-top: 0;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-    .metrics-section ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .metrics-section li {
-      padding: 6px 0;
-      text-align: center;
-      font-size: 1em;
-    }
+    .details-content { padding: 15px; background-color: #f9f9f9; text-align: left; }
+    .details-content h3 { margin-top: 0; color: #003b59; }
+    .details-content textarea { width: 100%; min-height: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; margin-top: 10px; }
 
-    .ai-summary-section {
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 59, 89, .15);
-      padding: 20px;
-      margin-bottom: 40px;
-    }
-    .ai-summary-section h2 {
-      color: #003b59;
-      font-size: 1.5em;
-      margin-top: 0;
-      margin-bottom: 15px;
-      text-align: center;
-    }
+    .high-status { background-color: #ffe5e5; }
+    .low-status  { background-color: #e5f0ff; }
 
-    /* Add chart section styles */
-    .chart-section {
-      margin-top: 60px;
-    }
-    .chart-section h2 {
-      color: #003b59;
-      font-size: 1.5em;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    #charts {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 24px;
-    }
-    .chart-container {
-      background: #ffffff;
-      border-radius: 20px;
-      box-shadow: 0 6px 18px rgba(0, 59, 89, .15);
-      padding: 20px;
-      width: 260px;
-      height: 240px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      transition: transform 0.3s ease;
-    }
-    .chart-container:hover {
-      transform: translateY(-8px);
-    }
-    .chart-title {
-      font-size: 1em;
-      font-weight: bold;
-      color: #003b59;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-    .chart-checkbox {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      transform: scale(1.2);
-    }
-    footer {
-      margin-top: 40px;
-      text-align: center;
-      font-size: .8em;
-      color: #003b59;
-    }
+    .metrics-section, .ai-summary-section { background: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 59, 89, .15); padding: 20px; margin-bottom: 40px; }
+    .metrics-section h2, .ai-summary-section h2 { color: #003b59; font-size: 1.5em; margin: 0 0 15px; text-align: center; }
+    .metrics-section ul { list-style: none; padding: 0; margin: 0; }
+    .metrics-section li { padding: 6px 0; text-align: center; font-size: 1em; }
+
+    .chart-section { margin-top: 60px; }
+    .chart-section h2 { color: #003b59; font-size: 1.5em; margin-bottom: 20px; text-align: center; }
+    #charts { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; }
+
+    .chart-container { background: #ffffff; border-radius: 20px; box-shadow: 0 6px 18px rgba(0, 59, 89, .15);
+      padding: 20px; width: 260px; height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      position: relative; transition: transform 0.3s ease; }
+    .chart-container:hover { transform: translateY(-8px); }
+    .chart-title { font-size: 1.15em; font-weight: bold; color: #003b59; margin-bottom: 8px; text-align: center; line-height: 1.25; word-break: break-word; }
+    .chart-checkbox { position: absolute; top: 10px; right: 10px; transform: scale(1.2); }
+
+    footer { margin-top: 40px; text-align: center; font-size: .8em; color: #003b59; }
   </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
+  <!-- Core libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4"></script>
+  <!-- Datalabels: every-point labels with clamp & positioning -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <!-- Annotation plugin for Low/High reference lines & labels -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1"></script>
+  <!-- Time scale (date-fns adapter required by Chart.js time axis) -->
   <script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0"></script>
 </head>
@@ -241,13 +73,13 @@
   <p>Click on a row to expand field and create annotations for file export.</p>
 </header>
 
-  <div class="navigation">
-    <a href="javascript:history.back()">Go Back/Review PDF Results</a>
-    <a href="/">Start Over with New Files</a>
-    <a href="#" onclick="exportToCSV()" id="exportBtn">Export to CSV</a>
-    <a href="#" id="aiSummaryBtn">Get AI Lab Summary</a>
-    <a href="#" id="downloadPdfBtn">Download PDF Report</a>
-  </div>
+<div class="navigation">
+  <a href="javascript:history.back()">Go Back/Review PDF Results</a>
+  <a href="/">Start Over with New Files</a>
+  <a href="#" onclick="exportToCSV()" id="exportBtn">Export to CSV</a>
+  <a href="#" id="aiSummaryBtn">Get AI Lab Summary</a>
+  <a href="#" id="downloadPdfBtn">Download PDF Report</a>
+</div>
 
 <div class="metrics-section">
   <h2>Insulin Resistance Measures</h2>
@@ -292,8 +124,6 @@
       <td colspan="6">
         <div class="details-content">
           <h3>{{ r.TestName }} - Additional Information</h3>
-<!--          <p><strong>Definition:</strong> This field contains information about what {{ r.TestName }} measures and why it is clinically relevant.</p>
-          <p><strong>Interpretation:</strong> Guidelines for interpreting {{ r.TestName }} results based on the value {{ r.ObservedValue }} {{ r.Units }}.</p>-->
           <textarea placeholder="Add your notes about this test result here..."></textarea>
         </div>
       </td>
@@ -308,9 +138,16 @@
 </div>
 
 <script>
-const allRowsData = {{ rows|tojson }};
-const insulinMetrics = {{ insulin_metrics|tojson }};
+/** -------------------------------
+ * JSON data from Jinja
+ * ------------------------------- */
+const allRowsData   = {{ rows|tojson }};
+const insulinMetrics= {{ insulin_metrics|tojson }};
+let   testData      = {{ testData|tojson }};
 
+/** -------------------------------
+ * AI Summary fetch
+ * ------------------------------- */
 document.getElementById('aiSummaryBtn').addEventListener('click', async (e) => {
   e.preventDefault();
   const btn = e.currentTarget;
@@ -334,262 +171,311 @@ document.getElementById('aiSummaryBtn').addEventListener('click', async (e) => {
   }
 });
 
-// Sort table to show abnormal rows first
+/** -------------------------------
+ * Sort table: Abnormal rows first
+ * ------------------------------- */
 window.addEventListener('DOMContentLoaded', function() {
   const tableBody = document.querySelector('#resultsTable tbody');
   const rows = Array.from(tableBody.querySelectorAll('tr.expandable'));
-
-  // Sort rows so High and Low appear first, but keep details rows after their parent
   rows.sort((a, b) => {
-    // Get flags
-    const aFlag = a.classList.contains('high-status') ? 2 :
-                  (a.classList.contains('low-status') ? 1 : 0);
-    const bFlag = b.classList.contains('high-status') ? 2 :
-                  (b.classList.contains('low-status') ? 1 : 0);
-
-    return bFlag - aFlag; // Reverse sort so higher values (abnormal) come first
+    const aFlag = a.classList.contains('high-status') ? 2 : (a.classList.contains('low-status') ? 1 : 0);
+    const bFlag = b.classList.contains('high-status') ? 2 : (b.classList.contains('low-status') ? 1 : 0);
+    return bFlag - aFlag;
   });
-
-  // Rebuild the table in sorted order, keeping details rows with their parents
   rows.forEach(row => {
     const rowId = row.getAttribute('data-row-id');
     const detailsRow = document.getElementById('details-' + rowId);
-
-    // Move the row and its details row to the end of the table
     tableBody.appendChild(row);
     tableBody.appendChild(detailsRow);
   });
 });
 
-// Function to toggle detail rows
+/** -------------------------------
+ * Expand/collapse detail rows
+ * ------------------------------- */
 function toggleDetails(rowId) {
   const detailsRow = document.getElementById('details-' + rowId);
   const expandableRow = document.querySelector(`tr[data-row-id="${rowId}"]`);
-
   detailsRow.classList.toggle('visible');
   expandableRow.classList.toggle('expanded');
 }
 
-// Function to export table data to CSV
+/** -------------------------------
+ * Export table to CSV
+ * ------------------------------- */
 function exportToCSV() {
   const table = document.getElementById('resultsTable');
   const rows = table.querySelectorAll('tr.expandable');
-  const headers = ['Date', 'Test Name', 'Observed Value', 'Low Reference', 'High Reference', 'Units', 'Flag', 'Notes'];
-  
+  const headers = ['Date','Test Name','Observed Value','Low Reference','High Reference','Units','Flag','Notes'];
   let csvContent = headers.join(',') + '\n';
-  
   rows.forEach(row => {
     const cells = row.querySelectorAll('td');
     const rowData = Array.from(cells).map(cell => {
       let content = cell.textContent.trim();
-      // Escape quotes and wrap in quotes if content contains commas
       if (content.includes(',') || content.includes('"') || content.includes('\n')) {
         content = '"' + content.replace(/"/g, '""') + '"';
       }
       return content;
     });
-    
-    // Get the notes from the corresponding textarea
     const rowId = row.getAttribute('data-row-id');
     const detailsRow = document.getElementById('details-' + rowId);
     const textarea = detailsRow.querySelector('textarea');
     let notes = textarea ? textarea.value.trim() : '';
-    
-    // Escape notes content for CSV
     if (notes.includes(',') || notes.includes('"') || notes.includes('\n')) {
       notes = '"' + notes.replace(/"/g, '""') + '"';
     }
-    
     rowData.push(notes);
     csvContent += rowData.join(',') + '\n';
   });
-  
-  // Create and download the file
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', `lab_results_${new Date().toISOString().split('T')[0]}.csv`);
+  link.href = url;
+  link.download = `lab_results_${new Date().toISOString().split('T')[0]}.csv`;
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 }
 
-// Chart creation code
-let testData = {{ testData|tojson }};
+/** -------------------------------
+ * Chart rendering
+ * ------------------------------- */
 const chartsDiv = document.getElementById('charts');
+const chartInstances = []; // keep references for export profile
 
+// Plugin: ensure white background for UI & export
+const whiteBgPlugin = {
+  id: 'whiteBackground',
+  beforeDraw(chart, args, opts) {
+    const { ctx, width, height } = chart;
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = (opts && opts.color) ? opts.color : '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+  }
+};
+
+// Helper: value formatting with units
+function formatValue(val, unit) {
+  if (val == null || Number.isNaN(val)) return '';
+  const n = Number(val);
+  const txt = (Math.abs(n) >= 1000) ? n.toFixed(0) : n.toFixed(1);
+  return unit ? `${txt} ${unit}` : `${txt}`;
+}
+
+// Build each chart card
 for (const [name, data] of Object.entries(testData)) {
-
-  <!-- let low = parseFloat(r.Low); -->
-  <!-- let high = r.High ? parseFloat(r.High) : null; -->
-  <!-- const val = parseFloat(r.ObservedValue); -->
-  <!-- const obs = isNaN(val) ? 0 : val; -->
-
-  <!-- // For one-sided ranges (only low bound) -->
-  <!-- if (!isNaN(low) && (high === null || isNaN(high))) { -->
-  <!--   // Set upper limit to be 50% above observed value or 50% above lower limit, whichever is higher -->
-  <!--   high = Math.max(obs * 1.5, low * 1.5); -->
-  <!-- } -->
-  <!-- // For one-sided ranges (only high bound) -->
-  <!-- else if (isNaN(low) && !isNaN(high)) { -->
-  <!--   // Set lower limit to be 50% below observed value or 50% below upper limit, whichever is lower -->
-  <!--   low = Math.min(obs * 0.5, high * 0.5); -->
-  <!-- } -->
-  <!-- // If both limits are missing -->
-  <!-- else if (isNaN(low) && (high === null || isNaN(high))) { -->
-  <!--   low = 0; -->
-  <!--   high = Math.max(obs * 2, 100); -->
-  <!-- } -->
-
-  <!-- let yMin = Math.min(low, obs, high); -->
-  <!-- let yMax = Math.max(low, obs, high); -->
-  <!-- const pad = (yMax - yMin) * 0.2 || 1; -->
-  <!-- yMin = Math.max(0, yMin - pad); -->
-  <!-- yMax += pad; -->
-
   const card = document.createElement('div');
   card.className = 'chart-container';
+
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';
   checkbox.className = 'chart-checkbox';
   card.appendChild(checkbox);
+
   const title = document.createElement('div');
   title.className = 'chart-title';
-  title.textContent = name;
+  const unitsText = (data.Units && data.Units[0]) ? ` (${data.Units[0]})` : '';
+  title.textContent = name + unitsText;
   card.appendChild(title);
 
   const canvas = document.createElement('canvas');
   canvas.id = `chart-${name}`;
+
+  /* Hi-DPI canvas for crisp PDFs (devicePixelRatio) — scales bitmap resolution. :contentReference[oaicite:1]{index=1} */
+  canvas.width = 1200;  canvas.height = 800;
+  canvas.style.width = '240px';  canvas.style.height = '180px';
+
   card.appendChild(canvas);
   chartsDiv.appendChild(card);
 
-  const points = data.Date.map((dateStr, i) => ({
-    x: new Date(dateStr),       // parse date string into JS Date object
-    y: data.ObservedValue[i],   // corresponding Y value
-  }));
-  new Chart(canvas.getContext('2d'), {
+  // Data points
+  const points = (data.Date || []).map((dateStr, i) => ({
+    x: new Date(dateStr),
+    y: (typeof data.ObservedValue?.[i] === 'number') ? data.ObservedValue[i] : parseFloat(data.ObservedValue?.[i])
+  })).filter(p => Number.isFinite(p.y) && !Number.isNaN(p.x));
+
+  // Time window & unit selection (day/week/month) with right buffer
+  const xDates = points.map(p => p.x);
+  const minDate = xDates.length ? new Date(Math.min(...xDates)) : null;
+  const maxDate = xDates.length ? new Date(Math.max(...xDates)) : null;
+  const dayMs = 24 * 60 * 60 * 1000;
+  const spanDays = (minDate && maxDate) ? Math.max(1, Math.round((maxDate - minDate) / dayMs)) : 1;
+  const xUnit = spanDays > 183 ? 'month' : (spanDays > 60 ? 'week' : 'day'); // time scale chooses comfortable unit :contentReference[oaicite:2]{index=2}
+
+  let xMaxBuffered = maxDate ? new Date(maxDate.getTime() + dayMs * Math.ceil(spanDays * 0.08)) : undefined;
+  let xMinBuffered = minDate;
+  if (points.length === 1 && xDates.length === 1) {
+    const mid = xDates[0].getTime(); const padDays = 30;
+    xMinBuffered = new Date(mid - padDays * dayMs);
+    xMaxBuffered = new Date(mid + padDays * dayMs);
+  }
+
+  // Y bounds: include data + reference targets with padded headroom
+  const numLow  = Number.parseFloat(Array.isArray(data.Low)  ? data.Low[0]  : data.Low);
+  const numHigh = Number.parseFloat(Array.isArray(data.High) ? data.High[0] : data.High);
+  const ys = points.map(p => p.y).filter(Number.isFinite);
+  const yMinData = ys.length ? Math.min(...ys) : 0;
+  const yMaxData = ys.length ? Math.max(...ys) : 1;
+  const yCandidates = [yMinData, yMaxData];
+  if (Number.isFinite(numLow))  yCandidates.push(numLow);
+  if (Number.isFinite(numHigh)) yCandidates.push(numHigh);
+  let yMax = Math.max(...yCandidates);
+  let yMin = 0;
+  const pad = Math.max(1, (yMax - yMin) * 0.15);
+  yMax = yMax + pad * 0.8;
+
+  // Font scaling helper for the hi-DPI canvas
+  const cssW = canvas.clientWidth || parseFloat(getComputedStyle(canvas).width) || 240;
+  const pxScale = canvas.width / cssW;
+  const fpx = (px) => Math.round(px * pxScale);
+
+  // Chart instance
+  const ctx = canvas.getContext('2d');
+  const unitLabel = (data.Units && data.Units[0]) ? `${data.Units[0]}` : '';
+
+  const chart = new Chart(ctx, {
     type: 'scatter',
     data: {
       datasets: [{
         label: 'Observed Value',
         data: points,
-        pointRadius: 7,
-        pointHoverRadius: 14,
+        pointRadius: 5, pointHoverRadius: 8, borderWidth: 2,
         showLine: points.length > 1,
-        borderColor: '#003b59',
-        fill: false,
+        borderColor: '#003b59', pointBackgroundColor: '#003b59', fill: false
       }]
     },
     options: {
-      responsive: false,
-      maintainAspectRatio: false,
+      responsive: false, maintainAspectRatio: false,
+      devicePixelRatio: 2, /* high-res export; see docs */ /* :contentReference[oaicite:3]{index=3} */
+      layout: { padding: { left: 6, right: 44, top: 8, bottom: 6 } },
+
       scales: {
         x: {
-          title: {
-            display: true,
-            text: 'Date'
-          },
-          type: 'time',          // Tell Chart.js to use time scale
+          type: 'time', /* requires adapter & date lib */ /* :contentReference[oaicite:4]{index=4} */
+          title: { display: true, text: 'Date', color: '#003b59', font: { size: fpx(14), weight: 'bold' } },
           time: {
-            parser: 'MM/DD/YYYY', // Optional if you're passing Date objects
-            tooltipFormat: 'MMM d, yyyy',
-            unit: 'day',
+            tooltipFormat: (xUnit === 'month') ? 'MMM yyyy' : 'MMM d, yyyy',
+            unit: xUnit,
+            displayFormats: { day: 'MMM d', week: 'MMM d', month: 'MMM yyyy' } /* date-fns tokens */
           },
+          ticks: {
+            maxTicksLimit: (xUnit === 'month') ? 6 : (xUnit === 'week' ? 6 : 5), /* fewer ticks on small cards */
+            padding: 8,
+            maxRotation: 0, minRotation: 0, autoSkip: true, autoSkipPadding: 8, /* prevent slanted labels & give spacing */ /* :contentReference[oaicite:5]{index=5} */
+            color: '#003b59', font: { size: fpx(12) }
+          },
+          grid: { color: 'rgba(0,59,89,0.08)', lineWidth: 1 },
+          border: { color: 'rgba(0,59,89,0.25)' },
+          min: xMinBuffered, max: xMaxBuffered
         },
         y: {
-          title: {
-            display: true,
-            text: `${name} (${data.Units[0]})`,
-            font: { weight: 'bold', size: 14 }
-          }
+          title: { display: !!unitLabel, text: unitLabel, color: '#003b59', font: { weight: 'bold', size: fpx(14) } },
+          min: yMin, suggestedMax: Number.isFinite(yMax) ? yMax : undefined, beginAtZero: true,
+          ticks: { maxTicksLimit: 4, padding: 4, color: '#003b59', font: { size: fpx(12) } }, /* :contentReference[oaicite:6]{index=6} */
+          grid: { color: 'rgba(0,59,89,0.08)', lineWidth: 1 },
+          border: { color: 'rgba(0,59,89,0.25)' }
         }
       },
+
       plugins: {
+        whiteBackground: { color: '#ffffff' },
+        title: { display: false },
+        legend: { display: false },
+
+        // Reference lines (Low/High) with callouts positioned near edges to avoid data labels
         annotation: {
           annotations: {
-            adjustScaleRange: true,
-
-            ...(Number.isFinite(parseFloat(data.Low[0])) ? {
+            ...(Number.isFinite(numLow) ? {
               lowLine: {
-                type: 'line',
-                yMin: parseFloat(data.Low[0]),
-                yMax: parseFloat(data.Low[0]),
-                borderColor: 'blue',
-                borderWidth: 1,
-                borderDash: [6, 6],
+                type: 'line', yMin: numLow, yMax: numLow,
+                borderColor: 'rgba(0, 102, 204, 0.9)', borderWidth: 1.5, borderDash: [6,6],
                 label: {
-                  content: `Low: ${data.Low[0]}`,
-                  enabled: true,
-                  position: 'start',
-                  backgroundColor: 'rgba(130,194,215,0.2)',
-                  color: 'blue',
-                  font: { weight: 'bold', size: 9 },
-                  yAdjust: 12,
-                  xAdjust: 10,
-                  padding: 4
+                  display: true, content: `Low: ${numLow}`, position: 'start', /* shift left */
+                  xAdjust: -12, yAdjust: 8,
+                  backgroundColor: 'rgba(130,194,215,0.15)', color: 'rgba(0, 102, 204, 1)',
+                  font: { weight: 'bold', size: fpx(11) },
+                  callout: { display: true } /* leader line when offset */ /* :contentReference[oaicite:7]{index=7} */
                 }
               }
             } : {}),
-
-            ...(data.High[0] && Number.isFinite(parseFloat(data.High[0])) ? {
+            ...(Number.isFinite(numHigh) ? {
               highLine: {
-                type: 'line',
-                yMin: parseFloat(data.High[0]),
-                yMax: parseFloat(data.High[0]),
-                borderColor: 'red',
-                borderWidth: 1,
-                borderDash: [6, 6],
+                type: 'line', yMin: numHigh, yMax: numHigh,
+                borderColor: 'rgba(204, 0, 0, 0.9)', borderWidth: 1.5, borderDash: [6,6],
                 label: {
-                  content: `High: ${data.High[0]}`,
-                  enabled: true,
-                  position: 'start',
-                  backgroundColor: 'rgba(228,172,97,0.2)',
-                  color: 'red',
-                  font: { weight: 'bold', size: 9 },
-                  yAdjust: -12,
-                  xAdjust: 10,
-                  padding: 4
+                  display: true, content: `High: ${numHigh}`, position: 'end', /* shift right */
+                  xAdjust: 8, yAdjust: -12,
+                  backgroundColor: 'rgba(228,172,97,0.15)', color: 'rgba(204, 0, 0, 1)',
+                  font: { weight: 'bold', size: fpx(11) },
+                  callout: { display: true } /* :contentReference[oaicite:8]{index=8} */
                 }
               }
             } : {})
-          },
+          }
         },
+
+        // Datalabels: show EVERY point; clamp inside plot; adaptive side placement
+        // Positioning/clamp per plugin docs. :contentReference[oaicite:9]{index=9}
         datalabels: {
           display: true,
-          formatter: (value, context) => `${value.y}`,
-          anchor: 'end',
-          align: 'top',
-          font: { weight: 'bold' }
+          clamp: true,
+          clip: false,
+          backgroundColor: 'rgba(255,255,255,0.9)',
+          borderRadius: 3,
+          padding: { top: 2, right: 4, bottom: 2, left: 4 },
+          color: '#003b59',
+          font: { weight: 'bold', size: fpx(10) },
+          align: (ctx) => {
+            const {chartArea} = ctx.chart;
+            const pt = ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.dataIndex];
+            if (!pt || !chartArea) return 'right';
+            const roomRight = chartArea.right - pt.x;
+            const roomLeft  = pt.x - chartArea.left;
+            return (roomRight < 28 && roomLeft > roomRight) ? 'left' : 'right';
+          },
+          anchor: 'center',
+          offset: (ctx) => (ctx.dataIndex % 2 ? 8 : 6),
+          formatter: (value, ctx) => formatValue(value?.y, ctx.chart.$unitLabel)
         },
-        legend: { display: false },
+
         tooltip: {
           callbacks: {
-            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}`
+            label: (ctx) => `${ctx.dataset.label}: ${formatValue(ctx.parsed?.y, unitLabel)}`
           }
         }
       }
     },
-    plugins: [ChartDataLabels]
+    plugins: [whiteBgPlugin, ChartDataLabels]
   });
-};
 
+  // Expose unit for formatter usage in datalabels
+  chart.$unitLabel = unitLabel;
+
+  chartInstances.push({ chart, canvas, checkbox, titleEl: title, unitLabel, fpx });
+}
+
+/** -------------------------------
+ * Export to PDF (selected charts)
+ * - Applies "export profile" (bigger fonts/markers/lines),
+ *   captures bitmaps, then reverts.
+ * ------------------------------- */
 document.getElementById('downloadPdfBtn').addEventListener('click', async (e) => {
   e.preventDefault();
+  const selected = chartInstances.filter(c => c.checkbox && c.checkbox.checked);
+  if (!selected.length) { alert('Please select at least one chart.'); return; }
+
   const charts = [];
-  document.querySelectorAll('.chart-container').forEach(container => {
-    const cb = container.querySelector('.chart-checkbox');
-    if (cb && cb.checked) {
-      const name = container.querySelector('.chart-title').textContent;
-      const canvas = container.querySelector('canvas');
-      charts.push({ name, image: canvas.toDataURL('image/png') });
-    }
-  });
-  if (!charts.length) {
-    alert('Please select at least one chart.');
-    return;
+  for (const c of selected) {
+    applyExportProfile(c.chart, c.fpx, true);
+    c.chart.update();
+    charts.push({ name: c.titleEl.textContent, image: c.canvas.toDataURL('image/png') });
+    applyExportProfile(c.chart, c.fpx, false);
+    c.chart.update();
   }
+
   const response = await fetch('/chart_report', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -598,15 +484,37 @@ document.getElementById('downloadPdfBtn').addEventListener('click', async (e) =>
   const blob = await response.blob();
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.href = url;
-  link.download = 'lab_charts.pdf';
-  document.body.appendChild(link);
-  link.click();
+  link.href = url; link.download = 'lab_charts.pdf';
+  document.body.appendChild(link); link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 });
+
+/** -------------------------------
+ * Export profile toggles
+ * ------------------------------- */
+function applyExportProfile(chart, fpx, on) {
+  const ds = chart.data.datasets[0];
+  const base = { pointRadius: 5, pointHoverRadius: 8, borderWidth: 2 };
+  const exp  = { pointRadius: 8, pointHoverRadius: 10, borderWidth: 3 };
+
+  Object.assign(ds, on ? exp : base);
+
+  const x = chart.options.scales.x;
+  const y = chart.options.scales.y;
+  x.ticks.font.size = on ? fpx(14) : fpx(12);
+  y.ticks.font.size = on ? fpx(14) : fpx(12);
+  x.title.font.size = on ? fpx(16) : fpx(14);
+  y.title.font.size = on ? fpx(16) : fpx(14);
+
+  chart.options.plugins.datalabels.font.size = on ? fpx(14) : fpx(10);
+
+  const ann = chart.options.plugins.annotation?.annotations || {};
+  for (const key of Object.keys(ann)) {
+    if (ann[key].label?.font) ann[key].label.font.size = on ? fpx(13) : fpx(11);
+  }
+}
 </script>
 
 </body>
 </html>
-

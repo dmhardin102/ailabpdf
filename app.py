@@ -331,29 +331,67 @@ def chart_report():
     c = canvas.Canvas(pdf_buffer, pagesize=letter)
     width, height = letter
 
-    for chart in charts:
+    # Layout: two charts per page (top and bottom)
+    margin_x = 40
+    margin_y = 40
+    # Reserve space for a page-drawn title above each chart image
+    title_h = 22
+    gap_y = 24
+
+    slots_per_page = 2
+    slot_height = (height - 2 * margin_y - gap_y) / slots_per_page
+    max_w = width - 2 * margin_x
+
+    def draw_chart_at(img_reader, title, slot_index):
+        # slot_index: 0 (top) or 1 (bottom)
+        y_top = height - margin_y - slot_index * (slot_height + gap_y)
+        # Image fits below title inside slot
+        img_w, img_h = img_reader.getSize()
+        max_h = slot_height - title_h - 8
+        scale = min(max_w / img_w, max_h / img_h)
+        draw_w = img_w * scale
+        draw_h = img_h * scale
+        draw_x = margin_x
+        draw_y = y_top - title_h - draw_h
+
+        # Title centered above the image area
+        c.setFont("Helvetica-Bold", 14)
+        title_x_center = draw_x + (draw_w / 2)
+        title_y = y_top - (title_h - 4)
+        try:
+            c.drawCentredString(title_x_center, title_y, title)
+        except Exception:
+            # Fallback to left-aligned if font metrics cause issues
+            c.drawString(draw_x, title_y, title)
+
+        # White background behind the image
+        c.setFillColorRGB(1, 1, 1)
+        c.rect(draw_x, draw_y, draw_w, draw_h, fill=1, stroke=0)
+        c.drawImage(img_reader, draw_x, draw_y, draw_w, draw_h)
+
+    i = 0
+    while i < len(charts):
+        # First chart on page
+        chart = charts[i]
         name = chart.get("name", "")
         image = chart.get("image")
-        if not image:
-            continue
+        if image:
+            img_bytes = base64.b64decode(image.split(",", 1)[1])
+            img = ImageReader(io.BytesIO(img_bytes))
+            draw_chart_at(img, name, 0)
+        i += 1
 
-        # Decode the base64-encoded image
-        img_bytes = base64.b64decode(image.split(",", 1)[1])
-        img = ImageReader(io.BytesIO(img_bytes))
+        # Second chart on same page if available
+        if i < len(charts):
+            chart2 = charts[i]
+            name2 = chart2.get("name", "")
+            image2 = chart2.get("image")
+            if image2:
+                img_bytes2 = base64.b64decode(image2.split(",", 1)[1])
+                img2 = ImageReader(io.BytesIO(img_bytes2))
+                draw_chart_at(img2, name2, 1)
+            i += 1
 
-        c.setFont("Helvetica-Bold", 14)
-        c.drawString(40, height - 40, name)
-
-        img_w, img_h = img.getSize()
-        max_w, max_h = width - 80, height - 120
-        scale = min(max_w / img_w, max_h / img_h)
-        c.drawImage(
-            img,
-            40,
-            height - 80 - img_h * scale,
-            img_w * scale,
-            img_h * scale,
-        )
         c.showPage()
 
     c.save()
