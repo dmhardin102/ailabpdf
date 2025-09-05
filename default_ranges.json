@@ -453,23 +453,28 @@
     "x10^9/L"
   ],
   "Neutrophils %": [
-    "Not Established",
+    40,
+    75,
     "%"
   ],
   "Lymphocytes %": [
-    "Not Established",
+    20,
+    45,
     "%"
   ],
   "Monocytes %": [
-    "Not Established",
+    2,
+    10,
     "%"
   ],
   "Eosinophils %": [
-    "Not Established",
+    1,
+    6,
     "%"
   ],
   "Basophils %": [
-    "Not Established",
+    0,
+    2,
     "%"
   ],
   "Lymphs (Absolute)": [

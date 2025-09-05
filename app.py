@@ -41,12 +41,19 @@ def parse():
         paths.append(path)
 
     docs, dates = [], []
+    # Add this list of excluded test names (case-insensitive)
+    EXCLUDED_TEST_NAMES = {"pdf", "disclaimer"}
+
     for path in paths:
         with fitz.open(path) as doc:
             subject_metadata, sample_metadata, data = parse_labcorp_pdf(doc)
 
         rows = []
         for row in data:
+            # Skip unwanted test names
+            if row["Test"].casefold() in EXCLUDED_TEST_NAMES:
+                continue
+
             test_name_candidates = [
                 f'{row["Test"]} {row["Units"]}',
                 f'{row["Panel"]} - {row["Test"]}',
@@ -136,20 +143,21 @@ def final():
         low = row.get("correct-low", "").strip()
         high = row.get("correct-high", "").strip()
 
-        # CRITICAL: Get the original flag from PDF and prioritize it completely
         original_flag = row.get("Flag", "").strip()
 
-        # If a test was explicitly flagged in the original PDF, track it
         if original_flag in ["High", "Low", "Abnormal"]:
             EXPLICITLY_FLAGGED.add(test)
 
-        # Direct fix for CBC percentage markers
+        # Use default range for FORCE_NOT_ESTABLISHED tests
         if (test in FORCE_NOT_ESTABLISHED and "Absolute" not in test and
             "Count" not in test and "abs" not in test.lower()):
-            low = "Not Established"
-            high = "Not Established"
-
-            # IMPORTANT: Only keep original flag if it was present in the PDF
+            if test in DEFAULT_RANGES:
+                range_data = DEFAULT_RANGES[test]
+                low = str(range_data[0])
+                high = str(range_data[1])
+            else:
+                low = "N/A"
+                high = "N/A"
             flag = original_flag if original_flag else "Normal"
         else:
             # Only use default ranges if no valid ranges were provided
