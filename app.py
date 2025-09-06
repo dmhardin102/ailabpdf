@@ -25,6 +25,16 @@ with open('default_ranges.json') as f:
 with open('common_aliases.json') as f:
     COMMON_TEST_ALIASES = load(f)
 
+# Tests that should always use hard-coded reference ranges even if the
+# PDF supplies its own "Reference Interval" value.
+FORCE_DEFAULT_RANGES = {
+    "Neutrophils %",
+    "Lymphocytes %",
+    "Monocytes %",
+    "Eosinophils %",
+    "Basophils %",
+}
+
 
 @app.route("/")
 def upload():
@@ -58,10 +68,12 @@ def parse():
             ]
 
             low, high, qualitative, units = None, None, None, row.get('Units')
-            for test_name in test_name_candidates:
-                test_name = COMMON_TEST_ALIASES.get(test_name.casefold(), test_name)
-                if test_name in DEFAULT_RANGES:
-                    match DEFAULT_RANGES[test_name]:
+            test_name = row["Test"]
+            for candidate in test_name_candidates:
+                candidate = COMMON_TEST_ALIASES.get(candidate.casefold(), candidate)
+                if candidate in DEFAULT_RANGES:
+                    test_name = candidate
+                    match DEFAULT_RANGES[candidate]:
                         case [qualitative, units]:
                             pass
                         case [low, high, units]:
@@ -69,9 +81,10 @@ def parse():
                         case [low, high, units, _, _, _]:
                             pass
                     break
+                else:
+                    test_name = candidate
 
-
-            if row["Reference Interval"] is not None:
+            if row["Reference Interval"] is not None and test_name not in FORCE_DEFAULT_RANGES:
                 if row["Reference Interval"].startswith("<"):
                     high = row["Reference Interval"].removeprefix("<")
                     low = "0"
