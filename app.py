@@ -25,6 +25,9 @@ with open('default_ranges.json') as f:
 with open('common_aliases.json') as f:
     COMMON_TEST_ALIASES = load(f)
 
+with open('lab_categories.json') as f:
+    LAB_CATEGORIES = load(f)
+
 # Tests that should always use hard-coded reference ranges even if the
 # PDF supplies its own "Reference Interval" value.
 FORCE_DEFAULT_RANGES = {
@@ -357,63 +360,7 @@ def chart_report():
     margin_y = 40
     line_height = 14
 
-    category_keywords = {
-        "Blood Counts and Hematology": [
-            "cbc",
-            "hemoglobin",
-            "hematocrit",
-            "white blood",
-            "wbc",
-            "red blood",
-            "rbc",
-            "platelet",
-            "neutroph",
-            "lymph",
-            "monocyte",
-            "eosinoph",
-            "basoph",
-            "mcv",
-            "mch",
-            "mchc",
-            "rdw",
-        ],
-        "Cholesterol and Cardiovascular Health": [
-            "cholesterol",
-            "lipid",
-            "ldl",
-            "hdl",
-            "triglyceride",
-            "apolipoprotein b",
-            "apo b",
-            "apob",
-            "hs-crp",
-            "c-reactive protein",
-            "lipo a",
-            "lipoprotein",
-        ],
-        "Metabolism and Insulin Sensitivity": [
-            "metabolic",
-            "glucose",
-            "bun",
-            "creatinine",
-            "sodium",
-            "potassium",
-            "chloride",
-            "carbon dioxide",
-            "co2",
-            "calcium",
-            "protein",
-            "albumin",
-            "bilirubin",
-            "alkaline phosphatase",
-            "ast",
-            "alt",
-            "insulin",
-            "hemoglobin a1c",
-            "a1c",
-            "hba1c",
-        ],
-    }
+    category_keywords = LAB_CATEGORIES
 
     categorized = {heading: [] for heading in category_keywords}
     categorized["Other Lab Markers"] = []

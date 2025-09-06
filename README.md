@@ -17,6 +17,12 @@ Trends can be hghlighted with annotations.
 Final screen calculates the HDL/Trig ratio, HOMA-IR, and A1c estimated average glucose.
 Also, a Google Gemini Flash LLM call is made via API to generate a plain language summary of the results and trends.
 
+## Configuration
+
+Lab marker categories used in the generated PDF report are defined in
+`lab_categories.json`. Update this file to customize how tests are grouped
+into sections.
+
 Next Steps:
 Secure app via user authentication and encrypted storage of data.
 Securely interact with LLM to generate plain language summaries of results and trends.
