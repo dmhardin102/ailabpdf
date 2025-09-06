@@ -84,6 +84,11 @@ def parse():
                 else:
                     test_name = candidate
 
+            # --- Force default value for C-Reactive Protein, Quant if missing ---
+            if test_name.lower() in ["c-reactive protein, quant", "c-reactive protein, qu", "c-reactive protein"]:
+                if not row["Current Result"] or row["Current Result"].strip() == "":
+                    row["Current Result"] = "<1"
+
             if row["Reference Interval"] is not None and test_name not in FORCE_DEFAULT_RANGES:
                 if row["Reference Interval"].startswith("<"):
                     high = row["Reference Interval"].removeprefix("<")
@@ -215,7 +220,16 @@ def final():
                 # Only calculate flags when no original flag exists
                 flag = "Normal"
                 try:
-                    if low == "Not Established" or high == "Not Established" or low == "N/A" or high == "N/A":
+                    # Handle values like "<1" or ">5"
+                    if isinstance(val, str) and (val.startswith("<") or val.startswith(">")):
+                        num = float(re.sub(r"[^\d.]", "", val))
+                        if val.startswith("<") and low and num <= float(low):
+                            flag = "Low"
+                        elif val.startswith(">") and high and num >= float(high):
+                            flag = "High"
+                        else:
+                            flag = "Normal"
+                    elif low == "Not Established" or high == "Not Established" or low == "N/A" or high == "N/A":
                         flag = "Normal"
                     else:
                         obs = float(val)
@@ -226,7 +240,6 @@ def final():
                         except:
                             pass
 
-                        # Only check high value if it exists and is not empty
                         if high and high.strip():
                             try:
                                 high_val = float(high)

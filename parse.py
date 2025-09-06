@@ -6,6 +6,7 @@ import fitz
 from fitz import Document, Page, Rect
 
 from typing import Generator, Any, DefaultDict
+import re
 
 
 def find_table_headers(page: Page, headers: list[str]) -> dict[str, Rect]:
@@ -156,6 +157,10 @@ def parse_labcorp_pdf(doc: Page) -> tuple[dict[str, str], dict[str, str], list[d
             # split apart "Current Result/Flag" as well as "Previous Result/Date"
             match row.pop('Current Result and Flag'):
                 case [result, flag]:
+                    # Fix: If result is '<' or '>', merge with flag if flag is a number
+                    if result in ['<', '>'] and re.match(r'^\d+(\.\d+)?$', flag):
+                        result = f"{result}{flag}"
+                        flag = ''
                     row.update({'Current Result': result, 'Flag': flag})
                 case [result]:
                     row.update({'Current Result': result, 'Flag': ''})
@@ -173,6 +178,12 @@ def parse_labcorp_pdf(doc: Page) -> tuple[dict[str, str], dict[str, str], list[d
                 case _:
                     msg = f'Could not split "Previous Result and Date" from {row = }'
                     raise ValueError(msg)
+
+            # After splitting Current Result and Flag
+            # Normalize Current Result to remove spaces between < and number
+            if 'Current Result' in row:
+                row['Current Result'] = re.sub(r'^<\s*([0-9.]+)$', r'<\1', row['Current Result'])
+                row['Current Result'] = re.sub(r'^>\s*([0-9.]+)$', r'>\1', row['Current Result'])
 
             clean_pdf_rows.append(
                 {k: v if isinstance(v, str) else ' '.join(v) for k, v in row.items()} | {'Panel': name}

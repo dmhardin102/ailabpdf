@@ -237,7 +237,7 @@
                   placeholder="Type or select test name"
                   oninput="handleImmediateCorrection(this)">
               </td>
-              <td><input type="number" step="any" name="correct-value[]" value="{{ r.Value }}" oninput="handleImmediateCorrection(this)"></td>
+              <td><input type="text" name="correct-value[]" value="{{ r.Value }}" oninput="handleImmediateCorrection(this)"></td>
               <td><input type="text" name="correct-low[]" value="{{ r.Low }}" placeholder="Low Ref" oninput="handleImmediateCorrection(this)"></td>
               <td><input type="text" name="correct-high[]" value="{{ r.High }}" placeholder="High Ref" oninput="handleImmediateCorrection(this)"></td>
               <td><input type="text" name="correct-units[]" value="{{ r.Units }}" placeholder="Units" oninput="handleImmediateCorrection(this)"></td>
