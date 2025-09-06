@@ -42,29 +42,8 @@
     .metrics-section ul { list-style: none; padding: 0; margin: 0; }
     .metrics-section li { padding: 6px 0; text-align: center; font-size: 1em; }
 
-    .chart-section { margin-top: 60px; }
-    .chart-section h2 { color: #003b59; font-size: 1.5em; margin-bottom: 20px; text-align: center; }
-    #charts { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; }
-
-    .chart-container { background: #ffffff; border-radius: 20px; box-shadow: 0 6px 18px rgba(0, 59, 89, .15);
-      padding: 20px; width: 260px; height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      position: relative; transition: transform 0.3s ease; }
-    .chart-container:hover { transform: translateY(-8px); }
-    .chart-title { font-size: 1.15em; font-weight: bold; color: #003b59; margin-bottom: 8px; text-align: center; line-height: 1.25; word-break: break-word; }
-    .chart-checkbox { position: absolute; top: 10px; right: 10px; transform: scale(1.2); }
-
     footer { margin-top: 40px; text-align: center; font-size: .8em; color: #003b59; }
   </style>
-
-  <!-- Core libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4"></script>
-  <!-- Datalabels: every-point labels with clamp & positioning -->
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
-  <!-- Annotation plugin for Low/High reference lines & labels -->
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1"></script>
-  <!-- Time scale (date-fns adapter required by Chart.js time axis) -->
-  <script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0"></script>
 </head>
 <body>
 
@@ -132,18 +111,12 @@
   </tbody>
 </table>
 
-<div class="chart-section">
-  <h2>Individual Biomarker Charts</h2>
-  <div id="charts"></div>
-</div>
-
 <script>
 /** -------------------------------
  * JSON data from Jinja
  * ------------------------------- */
 const allRowsData   = {{ rows|tojson }};
 const insulinMetrics= {{ insulin_metrics|tojson }};
-let   testData      = {{ testData|tojson }};
 
 /** -------------------------------
  * AI Summary fetch
@@ -237,283 +210,22 @@ function exportToCSV() {
   link.click();
   document.body.removeChild(link);
 }
-
-/** -------------------------------
- * Chart rendering
- * ------------------------------- */
-const chartsDiv = document.getElementById('charts');
-const chartInstances = []; // keep references for export profile
-
-// Plugin: ensure white background for UI & export
-const whiteBgPlugin = {
-  id: 'whiteBackground',
-  beforeDraw(chart, args, opts) {
-    const { ctx, width, height } = chart;
-    ctx.save();
-    ctx.globalCompositeOperation = 'destination-over';
-    ctx.fillStyle = (opts && opts.color) ? opts.color : '#ffffff';
-    ctx.fillRect(0, 0, width, height);
-    ctx.restore();
-  }
-};
-
-// Helper: value formatting with units
-function formatValue(val, unit) {
-  if (val == null || Number.isNaN(val)) return '';
-  const n = Number(val);
-  const txt = (Math.abs(n) >= 1000) ? n.toFixed(0) : n.toFixed(1);
-  return unit ? `${txt} ${unit}` : `${txt}`;
-}
-
-// Build each chart card
-for (const [name, data] of Object.entries(testData)) {
-  const card = document.createElement('div');
-  card.className = 'chart-container';
-
-  const checkbox = document.createElement('input');
-  checkbox.type = 'checkbox';
-  checkbox.className = 'chart-checkbox';
-  card.appendChild(checkbox);
-
-  const title = document.createElement('div');
-  title.className = 'chart-title';
-  const unitsText = (data.Units && data.Units[0]) ? ` (${data.Units[0]})` : '';
-  title.textContent = name + unitsText;
-  card.appendChild(title);
-
-  const canvas = document.createElement('canvas');
-  canvas.id = `chart-${name}`;
-
-  /* Hi-DPI canvas for crisp PDFs (devicePixelRatio) — scales bitmap resolution. :contentReference[oaicite:1]{index=1} */
-  canvas.width = 1200;  canvas.height = 800;
-  canvas.style.width = '240px';  canvas.style.height = '180px';
-
-  card.appendChild(canvas);
-  chartsDiv.appendChild(card);
-
-  // Data points
-  const points = (data.Date || []).map((dateStr, i) => ({
-    x: new Date(dateStr),
-    y: (typeof data.ObservedValue?.[i] === 'number') ? data.ObservedValue[i] : parseFloat(data.ObservedValue?.[i])
-  })).filter(p => Number.isFinite(p.y) && !Number.isNaN(p.x));
-
-  // Time window & unit selection (day/week/month) with right buffer
-  const xDates = points.map(p => p.x);
-  const minDate = xDates.length ? new Date(Math.min(...xDates)) : null;
-  const maxDate = xDates.length ? new Date(Math.max(...xDates)) : null;
-  const dayMs = 24 * 60 * 60 * 1000;
-  const spanDays = (minDate && maxDate) ? Math.max(1, Math.round((maxDate - minDate) / dayMs)) : 1;
-  const xUnit = spanDays > 183 ? 'month' : (spanDays > 60 ? 'week' : 'day'); // time scale chooses comfortable unit :contentReference[oaicite:2]{index=2}
-
-  let xMaxBuffered = maxDate ? new Date(maxDate.getTime() + dayMs * Math.ceil(spanDays * 0.08)) : undefined;
-  let xMinBuffered = minDate;
-  if (points.length === 1 && xDates.length === 1) {
-    const mid = xDates[0].getTime(); const padDays = 30;
-    xMinBuffered = new Date(mid - padDays * dayMs);
-    xMaxBuffered = new Date(mid + padDays * dayMs);
-  }
-
-  // Y bounds: include data + reference targets with padded headroom
-  const numLow  = Number.parseFloat(Array.isArray(data.Low)  ? data.Low[0]  : data.Low);
-  const numHigh = Number.parseFloat(Array.isArray(data.High) ? data.High[0] : data.High);
-  const ys = points.map(p => p.y).filter(Number.isFinite);
-  const yMinData = ys.length ? Math.min(...ys) : 0;
-  const yMaxData = ys.length ? Math.max(...ys) : 1;
-  const yCandidates = [yMinData, yMaxData];
-  if (Number.isFinite(numLow))  yCandidates.push(numLow);
-  if (Number.isFinite(numHigh)) yCandidates.push(numHigh);
-  let yMax = Math.max(...yCandidates);
-  let yMin = 0;
-  const pad = Math.max(1, (yMax - yMin) * 0.15);
-  yMax = yMax + pad * 0.8;
-
-  // Font scaling helper for the hi-DPI canvas
-  const cssW = canvas.clientWidth || parseFloat(getComputedStyle(canvas).width) || 240;
-  const pxScale = canvas.width / cssW;
-  const fpx = (px) => Math.round(px * pxScale);
-
-  // Chart instance
-  const ctx = canvas.getContext('2d');
-  const unitLabel = (data.Units && data.Units[0]) ? `${data.Units[0]}` : '';
-
-  const chart = new Chart(ctx, {
-    type: 'scatter',
-    data: {
-      datasets: [{
-        label: 'Observed Value',
-        data: points,
-        pointRadius: 5, pointHoverRadius: 8, borderWidth: 2,
-        showLine: points.length > 1,
-        borderColor: '#003b59', pointBackgroundColor: '#003b59', fill: false
-      }]
-    },
-    options: {
-      responsive: false, maintainAspectRatio: false,
-      devicePixelRatio: 2, /* high-res export; see docs */ /* :contentReference[oaicite:3]{index=3} */
-      layout: { padding: { left: 6, right: 44, top: 8, bottom: 6 } },
-
-      scales: {
-        x: {
-          type: 'time', /* requires adapter & date lib */ /* :contentReference[oaicite:4]{index=4} */
-          title: { display: true, text: 'Date', color: '#003b59', font: { size: fpx(14), weight: 'bold' } },
-          time: {
-            tooltipFormat: (xUnit === 'month') ? 'MMM yyyy' : 'MMM d, yyyy',
-            unit: xUnit,
-            displayFormats: { day: 'MMM d', week: 'MMM d', month: 'MMM yyyy' } /* date-fns tokens */
-          },
-          ticks: {
-            maxTicksLimit: (xUnit === 'month') ? 6 : (xUnit === 'week' ? 6 : 5), /* fewer ticks on small cards */
-            padding: 8,
-            maxRotation: 0, minRotation: 0, autoSkip: true, autoSkipPadding: 8, /* prevent slanted labels & give spacing */ /* :contentReference[oaicite:5]{index=5} */
-            color: '#003b59', font: { size: fpx(12) }
-          },
-          grid: { color: 'rgba(0,59,89,0.08)', lineWidth: 1 },
-          border: { color: 'rgba(0,59,89,0.25)' },
-          min: xMinBuffered, max: xMaxBuffered
-        },
-        y: {
-          title: { display: !!unitLabel, text: unitLabel, color: '#003b59', font: { weight: 'bold', size: fpx(14) } },
-          min: yMin, suggestedMax: Number.isFinite(yMax) ? yMax : undefined, beginAtZero: true,
-          ticks: { maxTicksLimit: 4, padding: 4, color: '#003b59', font: { size: fpx(12) } }, /* :contentReference[oaicite:6]{index=6} */
-          grid: { color: 'rgba(0,59,89,0.08)', lineWidth: 1 },
-          border: { color: 'rgba(0,59,89,0.25)' }
-        }
-      },
-
-      plugins: {
-        whiteBackground: { color: '#ffffff' },
-        title: { display: false },
-        legend: { display: false },
-
-        // Reference lines (Low/High) with callouts positioned near edges to avoid data labels
-        annotation: {
-          annotations: {
-            ...(Number.isFinite(numLow) ? {
-              lowLine: {
-                type: 'line', yMin: numLow, yMax: numLow,
-                borderColor: 'rgba(0, 102, 204, 0.9)', borderWidth: 1.5, borderDash: [6,6],
-                label: {
-                  display: true, content: `Low: ${numLow}`, position: 'start', /* shift left */
-                  xAdjust: -12, yAdjust: 8,
-                  backgroundColor: 'rgba(130,194,215,0.15)', color: 'rgba(0, 102, 204, 1)',
-                  font: { weight: 'bold', size: fpx(11) },
-                  callout: { display: true } /* leader line when offset */ /* :contentReference[oaicite:7]{index=7} */
-                }
-              }
-            } : {}),
-            ...(Number.isFinite(numHigh) ? {
-              highLine: {
-                type: 'line', yMin: numHigh, yMax: numHigh,
-                borderColor: 'rgba(204, 0, 0, 0.9)', borderWidth: 1.5, borderDash: [6,6],
-                label: {
-                  display: true, content: `High: ${numHigh}`, position: 'end', /* shift right */
-                  xAdjust: 8, yAdjust: -12,
-                  backgroundColor: 'rgba(228,172,97,0.15)', color: 'rgba(204, 0, 0, 1)',
-                  font: { weight: 'bold', size: fpx(11) },
-                  callout: { display: true } /* :contentReference[oaicite:8]{index=8} */
-                }
-              }
-            } : {})
-          }
-        },
-
-        // Datalabels: show EVERY point; clamp inside plot; adaptive side placement
-        // Positioning/clamp per plugin docs. :contentReference[oaicite:9]{index=9}
-        datalabels: {
-          display: true,
-          clamp: true,
-          clip: false,
-          backgroundColor: 'rgba(255,255,255,0.9)',
-          borderRadius: 3,
-          padding: { top: 2, right: 4, bottom: 2, left: 4 },
-          color: '#003b59',
-          font: { weight: 'bold', size: fpx(10) },
-          align: (ctx) => {
-            const {chartArea} = ctx.chart;
-            const pt = ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.dataIndex];
-            if (!pt || !chartArea) return 'right';
-            const roomRight = chartArea.right - pt.x;
-            const roomLeft  = pt.x - chartArea.left;
-            return (roomRight < 28 && roomLeft > roomRight) ? 'left' : 'right';
-          },
-          anchor: 'center',
-          offset: (ctx) => (ctx.dataIndex % 2 ? 8 : 6),
-          formatter: (value, ctx) => formatValue(value?.y, ctx.chart.$unitLabel)
-        },
-
-        tooltip: {
-          callbacks: {
-            label: (ctx) => `${ctx.dataset.label}: ${formatValue(ctx.parsed?.y, unitLabel)}`
-          }
-        }
-      }
-    },
-    plugins: [whiteBgPlugin, ChartDataLabels]
-  });
-
-  // Expose unit for formatter usage in datalabels
-  chart.$unitLabel = unitLabel;
-
-  chartInstances.push({ chart, canvas, checkbox, titleEl: title, unitLabel, fpx });
-}
-
-/** -------------------------------
- * Export to PDF (selected charts)
- * - Applies "export profile" (bigger fonts/markers/lines),
- *   captures bitmaps, then reverts.
- * ------------------------------- */
 document.getElementById('downloadPdfBtn').addEventListener('click', async (e) => {
   e.preventDefault();
-  const selected = chartInstances.filter(c => c.checkbox && c.checkbox.checked);
-  if (!selected.length) { alert('Please select at least one chart.'); return; }
-
-  const charts = [];
-  for (const c of selected) {
-    applyExportProfile(c.chart, c.fpx, true);
-    c.chart.update();
-    charts.push({ name: c.titleEl.textContent, image: c.canvas.toDataURL('image/png') });
-    applyExportProfile(c.chart, c.fpx, false);
-    c.chart.update();
-  }
-
   const response = await fetch('/chart_report', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ charts })
+    body: JSON.stringify({ rows: allRowsData })
   });
   const blob = await response.blob();
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.href = url; link.download = 'lab_charts.pdf';
+  link.href = url; link.download = 'lab_report.pdf';
   document.body.appendChild(link); link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 });
 
-/** -------------------------------
- * Export profile toggles
- * ------------------------------- */
-function applyExportProfile(chart, fpx, on) {
-  const ds = chart.data.datasets[0];
-  const base = { pointRadius: 5, pointHoverRadius: 8, borderWidth: 2 };
-  const exp  = { pointRadius: 8, pointHoverRadius: 10, borderWidth: 3 };
-
-  Object.assign(ds, on ? exp : base);
-
-  const x = chart.options.scales.x;
-  const y = chart.options.scales.y;
-  x.ticks.font.size = on ? fpx(14) : fpx(12);
-  y.ticks.font.size = on ? fpx(14) : fpx(12);
-  x.title.font.size = on ? fpx(16) : fpx(14);
-  y.title.font.size = on ? fpx(16) : fpx(14);
-
-  chart.options.plugins.datalabels.font.size = on ? fpx(14) : fpx(10);
-
-  const ann = chart.options.plugins.annotation?.annotations || {};
-  for (const key of Object.keys(ann)) {
-    if (ann[key].label?.font) ann[key].label.font.size = on ? fpx(13) : fpx(11);
-  }
-}
 </script>
 
 </body>

@@ -1,4 +1,3 @@
-from collections import defaultdict
 import os
 import re
 from datetime import datetime
@@ -9,10 +8,8 @@ from google import genai
 from parse import parse_labcorp_pdf
 import fitz
 import io
-import base64
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from reportlab.lib.utils import ImageReader
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
@@ -286,16 +283,7 @@ def final():
     }
 
     # Return the rendered template
-    test_data = defaultdict(lambda: defaultdict(list))
-    for row in final_rows:
-        test = row['TestName']
-        for k, v in row.items():
-            if k == 'TestName':
-                continue
-            if not v.strip() or v.casefold() == 'n/a':
-                v = None
-            test_data[test][k].append(v)
-    return render_template('finaltable.html.j2', rows=final_rows, year=datetime.now().year, testData=test_data, insulin_metrics=insulin_metrics)
+    return render_template('finaltable.html.j2', rows=final_rows, year=datetime.now().year, insulin_metrics=insulin_metrics)
 
 
 @app.route("/ai_summary", methods=["POST"])
@@ -333,74 +321,112 @@ def ai_summary():
 @app.route("/chart_report", methods=["POST"])
 def chart_report():
     data = request.get_json(force=True)
-    charts = data.get("charts", [])
+    rows = data.get("rows", [])
 
     pdf_buffer = io.BytesIO()
     c = canvas.Canvas(pdf_buffer, pagesize=letter)
     width, height = letter
 
-    # Layout: two charts per page (top and bottom)
     margin_x = 40
     margin_y = 40
-    # Reserve space for a page-drawn title above each chart image
-    title_h = 22
-    gap_y = 24
+    line_height = 14
 
-    slots_per_page = 2
-    slot_height = (height - 2 * margin_y - gap_y) / slots_per_page
-    max_w = width - 2 * margin_x
+    category_keywords = {
+        "Blood Counts and Hematology": [
+            "cbc",
+            "hemoglobin",
+            "hematocrit",
+            "white blood",
+            "wbc",
+            "red blood",
+            "rbc",
+            "platelet",
+            "neutroph",
+            "lymph",
+            "monocyte",
+            "eosinoph",
+            "basoph",
+            "mcv",
+            "mch",
+            "mchc",
+            "rdw",
+        ],
+        "Cholesterol and Cardiovascular Health": [
+            "cholesterol",
+            "lipid",
+            "ldl",
+            "hdl",
+            "triglyceride",
+            "apolipoprotein b",
+            "apo b",
+            "apob",
+            "hs-crp",
+            "c-reactive protein",
+            "lipo a",
+            "lipoprotein",
+        ],
+        "Metabolism and Insulin Sensitivity": [
+            "metabolic",
+            "glucose",
+            "bun",
+            "creatinine",
+            "sodium",
+            "potassium",
+            "chloride",
+            "carbon dioxide",
+            "co2",
+            "calcium",
+            "protein",
+            "albumin",
+            "bilirubin",
+            "alkaline phosphatase",
+            "ast",
+            "alt",
+            "insulin",
+            "hemoglobin a1c",
+            "a1c",
+            "hba1c",
+        ],
+    }
 
-    def draw_chart_at(img_reader, title, slot_index):
-        # slot_index: 0 (top) or 1 (bottom)
-        y_top = height - margin_y - slot_index * (slot_height + gap_y)
-        # Image fits below title inside slot
-        img_w, img_h = img_reader.getSize()
-        max_h = slot_height - title_h - 8
-        scale = min(max_w / img_w, max_h / img_h)
-        draw_w = img_w * scale
-        draw_h = img_h * scale
-        draw_x = margin_x
-        draw_y = y_top - title_h - draw_h
+    categorized = {heading: [] for heading in category_keywords}
+    categorized["Other Lab Markers"] = []
 
-        # Title centered above the image area
-        c.setFont("Helvetica-Bold", 14)
-        title_x_center = draw_x + (draw_w / 2)
-        title_y = y_top - (title_h - 4)
-        try:
-            c.drawCentredString(title_x_center, title_y, title)
-        except Exception:
-            # Fallback to left-aligned if font metrics cause issues
-            c.drawString(draw_x, title_y, title)
+    for r in rows:
+        name = r.get("TestName", "")
+        name_lower = name.lower()
+        category = None
+        for heading, keywords in category_keywords.items():
+            if any(kw in name_lower for kw in keywords):
+                category = heading
+                break
+        if not category:
+            category = "Other Lab Markers"
+        line = (
+            f"{name}: {r.get('ObservedValue')} {r.get('Units')} "
+            f"(Low: {r.get('Low')}, High: {r.get('High')}, Flag: {r.get('Flag')})"
+        )
+        categorized[category].append(line)
 
-        # White background behind the image
-        c.setFillColorRGB(1, 1, 1)
-        c.rect(draw_x, draw_y, draw_w, draw_h, fill=1, stroke=0)
-        c.drawImage(img_reader, draw_x, draw_y, draw_w, draw_h)
-
-    i = 0
-    while i < len(charts):
-        # First chart on page
-        chart = charts[i]
-        name = chart.get("name", "")
-        image = chart.get("image")
-        if image:
-            img_bytes = base64.b64decode(image.split(",", 1)[1])
-            img = ImageReader(io.BytesIO(img_bytes))
-            draw_chart_at(img, name, 0)
-        i += 1
-
-        # Second chart on same page if available
-        if i < len(charts):
-            chart2 = charts[i]
-            name2 = chart2.get("name", "")
-            image2 = chart2.get("image")
-            if image2:
-                img_bytes2 = base64.b64decode(image2.split(",", 1)[1])
-                img2 = ImageReader(io.BytesIO(img_bytes2))
-                draw_chart_at(img2, name2, 1)
-            i += 1
-
-        c.showPage()
+    y = height - margin_y
+    for heading, lines in categorized.items():
+        if not lines:
+            continue
+        if y < margin_y + line_height:
+            c.showPage()
+            y = height - margin_y
+        c.setFont("Helvetica-Bold", 16)
+        c.drawString(margin_x, y, heading)
+        y -= line_height
+        c.setFont("Helvetica", 12)
+        for line in lines:
+            if y < margin_y + line_height:
+                c.showPage()
+                y = height - margin_y
+                c.setFont("Helvetica", 12)
+            c.drawString(margin_x + 20, y, line)
+            y -= line_height
+        y -= line_height
 
     c.save()
     pdf_buffer.seek(0)
@@ -409,5 +435,5 @@ def chart_report():
         pdf_buffer,
         mimetype="application/pdf",
         as_attachment=True,
-        download_name="lab_charts.pdf",
+        download_name="lab_report.pdf",
     )
